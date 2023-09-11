@@ -1,0 +1,32 @@
+from fastapi import FastAPI
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
+from contextlib import asynccontextmanager
+
+from app.config import CONFIG
+from app.models.user import User, UserDAO
+from app.models.example import Example
+from app.models.translate import Word
+from app.models.completion import Model
+from app.models.alphabet import Alphabet
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.db = AsyncIOMotorClient(CONFIG.mongo_uri).glosso
+    app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
+    await init_beanie(
+        app.db, 
+        document_models=[
+            User,
+            UserDAO,
+            Example,
+            Word,
+            Model,
+            Alphabet,
+        ]
+    )
+    yield
+
+app = FastAPI(
+    lifespan=lifespan,
+)
