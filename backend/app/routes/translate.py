@@ -41,6 +41,16 @@ ISO_TO_AWS_LANG = {
     'es-US': 'es',
     'en-US': 'en',
     'nl-NL': 'nl',
+    'fr-FR': 'fr',
+    'de-DE': 'de',
+    'it-IT': 'it',
+    'is-IS': 'is',
+    'pt-PT': 'pt-PT',
+    'pt-BR': 'pt',
+    'ru-RU': 'ru',
+    'ja-JP': 'jp',
+    'arb': 'ar',
+    'sv-SE': 'sv',
 }
 
 router = APIRouter(
