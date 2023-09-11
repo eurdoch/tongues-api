@@ -37,6 +37,11 @@ session = Session(
 )
 translator = session.client("translate", region_name="us-east-1")
 
+ISO_TO_AWS_LANG = {
+    'es-US': 'es',
+    'en-US': 'en',
+}
+
 router = APIRouter(
     prefix="/api/v0",
     dependencies=[Depends(is_authorized)],
@@ -65,7 +70,11 @@ def parse_word_senses_completion(message: str):
 async def translate_text(
     translationRequest: TranslationRequest,
 ):
-    return translator.translate_text(Text=translationRequest.sentence, SourceLanguageCode='es', TargetLanguageCode='en')
+    return translator.translate_text(
+        Text=translationRequest.sentence, 
+        SourceLanguageCode=ISO_TO_AWS_LANG[translationRequest.sourceLang], 
+        TargetLanguageCode=ISO_TO_AWS_LANG[translationRequest.targetLang],
+    )
 
 # @router.post(
 #     "/translate/{word}"
