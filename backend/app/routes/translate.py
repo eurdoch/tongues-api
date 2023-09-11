@@ -40,6 +40,7 @@ translator = session.client("translate", region_name="us-east-1")
 ISO_TO_AWS_LANG = {
     'es-US': 'es',
     'en-US': 'en',
+    'nl-NL': 'nl',
 }
 
 router = APIRouter(
