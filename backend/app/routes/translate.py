@@ -163,9 +163,6 @@ async def explain_word(
             messages=[
                 {
                     "role": "user", 
-                    # "content": "Give a short explanation, using " + ISO_TO_LANG[parsedNativeLang] 
-                    #     + ", the meaning of the " + ISO_TO_LANG[parsedStudyLang] + " word '"
-                    #     + wordInfo.word + "' including it's different translations."
                     "content": "Explain the " + ISO_TO_LANG[parsedStudyLang] + " word " 
                         + "'" + wordInfo.word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
                         + " language, with the explanation written in the " + ISO_TO_LANG[parsedNativeLang]
