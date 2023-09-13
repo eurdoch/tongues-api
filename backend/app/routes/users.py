@@ -29,7 +29,7 @@ auther = Auther()
 async def get_user_by_id(
     authorization: str = Header(),
 ):
-    user_id = auther.get_user_from_jwt(authorization.split()[1])
+    user_id = auther.get_user_from_jwt(authorization)
     user: User = await User.get(user_id)
     if user is None:
         raise HTTPException(404)

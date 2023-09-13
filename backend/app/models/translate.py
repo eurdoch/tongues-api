@@ -19,6 +19,7 @@ class Explanation(BaseModel):
     nl_NL: str = ""
     es_US: str = ""
     en_US: str = ""
+    de_DE: str = ""
 
 class Word(Document):
     audio_id: PydanticObjectId

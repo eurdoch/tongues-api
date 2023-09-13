@@ -40,6 +40,17 @@ translator = session.client("translate", region_name="us-east-1")
 ISO_TO_AWS_LANG = {
     'es-US': 'es',
     'en-US': 'en',
+    'nl-NL': 'nl',
+    'fr-FR': 'fr',
+    'de-DE': 'de',
+    'it-IT': 'it',
+    'is-IS': 'is',
+    'pt-PT': 'pt-PT',
+    'pt-BR': 'pt',
+    'ru-RU': 'ru',
+    'ja-JP': 'jp',
+    'arb': 'ar',
+    'sv-SE': 'sv',
 }
 
 router = APIRouter(
@@ -152,9 +163,6 @@ async def explain_word(
             messages=[
                 {
                     "role": "user", 
-                    # "content": "Give a short explanation, using " + ISO_TO_LANG[parsedNativeLang] 
-                    #     + ", the meaning of the " + ISO_TO_LANG[parsedStudyLang] + " word '"
-                    #     + wordInfo.word + "' including it's different translations."
                     "content": "Explain the " + ISO_TO_LANG[parsedStudyLang] + " word " 
                         + "'" + wordInfo.word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
                         + " language, with the explanation written in the " + ISO_TO_LANG[parsedNativeLang]
