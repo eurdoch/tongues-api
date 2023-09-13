@@ -4,6 +4,8 @@ from fastapi import (
     Header,
     HTTPException,
     Depends,
+    Form,
+    UploadFile,
 )
 from typing import Annotated
 import os
@@ -24,14 +26,16 @@ router = APIRouter(
     "/transcription"
 )
 async def get_audio_transcription(
-    file: Annotated[bytes, File()],
+    file: Annotated[UploadFile, File()],
+    language: Annotated[str, Form()],
+    model: Annotated[str, Form()],
 ):
-    f = BytesIO(file)
     files = {
-        'file': ('speech.webm', f),
+        'file': ('speech.webm', file.file),
     }
     data = {
-        'model': 'whisper-1'
+        'model': model,
+        'language': language,
     }
     headers = {
         "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
