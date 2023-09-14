@@ -26,8 +26,8 @@ router = APIRouter(
 )
 async def get_audio_transcription(
     file: Annotated[UploadFile, File()],
-    model = Annotated[str, Form()],
-    language = Annotated[str, Form()],
+    language: Annotated[str, Form()],
+    model: Annotated[str, Form()],
 ):
     files = {
         'file': ('speech.webm', file.file),
@@ -45,6 +45,8 @@ async def get_audio_transcription(
         data=data,
         headers=headers
     )
+    print(r.status_code)
+    print(r.json())
     transcription = r.json()['text']
     transcription = transcription.strip()
     return {
