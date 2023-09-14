@@ -10,11 +10,8 @@ from fastapi import (
 from typing import Annotated
 import os
 import requests
-from io import BytesIO
 
 from app.utils.auth import is_authorized
-
-from google.cloud import speech
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,35 +26,27 @@ router = APIRouter(
 )
 async def get_audio_transcription(
     file: Annotated[UploadFile, File()],
+    model = Annotated[str, Form()],
+    language = Annotated[str, Form()],
 ):
-    audioBytes = file.file.read()
-    client = speech.SpeechClient()
-    config = {
-        "languageCode": "nl-NL",
+    files = {
+        'file': ('speech.webm', file.file),
     }
-    audio = {
-        "content": audioBytes,
+    data = {
+        'model': model,
+        'language': language,
     }
-    response = client.recognize(config=config, audio=audio)
-    return response
-    # files = {
-    #     'file': ('speech.webm', file.file),
-    # }
-    # data = {
-    #     'model': model,
-    #     'language': language,
-    # }
-    # headers = {
-    #     "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
-    # }
-    # r = requests.post(
-    #     url='https://api.openai.com/v1/audio/transcriptions',
-    #     files=files,
-    #     data=data,
-    #     headers=headers
-    # )
-    # transcription = r.json()['text']
-    # transcription = transcription.strip()
-    # return {
-    #     "text": transcription,
-    # }
+    headers = {
+        "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
+    }
+    r = requests.post(
+        url='https://api.openai.com/v1/audio/transcriptions',
+        files=files,
+        data=data,
+        headers=headers
+    )
+    transcription = r.json()['text']
+    transcription = transcription.strip()
+    return {
+        "text": transcription,
+    }
