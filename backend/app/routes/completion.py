@@ -40,4 +40,6 @@ async def get_completion(
             {"role": "user", "content": completionRequest.prompt}
         ]
     )
-    return completion
+    return {
+        "response": completion.choices[0].message.content,
+    }
