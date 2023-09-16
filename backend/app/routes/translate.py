@@ -18,6 +18,14 @@ from fastapi import (
     Depends,
 )
 
+from langchain.prompts import (
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    ChatMessagePromptTemplate,
+)
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import LLMChain
+
 from app.models.translate import (
     TranslationRequest, 
     TranslationResponse, 
@@ -81,37 +89,28 @@ def parse_word_senses_completion(message: str):
 async def translate_text(
     translationRequest: TranslationRequest,
 ):
-    return translator.translate_text(
-        Text=translationRequest.sentence, 
-        SourceLanguageCode=ISO_TO_AWS_LANG[translationRequest.sourceLang], 
-        TargetLanguageCode=ISO_TO_AWS_LANG[translationRequest.targetLang],
+    system_template = """You are an translator that translates 
+    {source_language} to {target_language}. The user will pass in text and 
+    you will translate the text.
+    ONLY return the translation in {target_language}.
+    """ 
+    system_prompt_message = SystemMessagePromptTemplate.from_template(system_template)
+    human_template = "{text}"
+    human_prompt_message = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatMessagePromptTemplate([system_prompt_message, human_prompt_message])
+    chain = LLMChain(
+        # TODO Refactor the llm to a separate file that can be accessed by all endpoints
+        llm=ChatOpenAI(),
+        prompt=chat_prompt,
     )
-
-# @router.post(
-#     "/translate/{word}"
-# )
-# async def translate_word(
-#     word: str,
-#     wordInfo: WordInfo,
-#     authorization = Header(),
-# ):
-#     if not await is_authorized(authorization):
-#         raise HTTPException(401)
-#     completion = openai.ChatCompletion.create(
-#         model='gpt-3.5-turbo',
-#         messages=[
-#             {
-#                 "role": "user", 
-#                 "content": "List the various word senses of the " + wordInfo.studyLang + 
-#                     " word " + word + " in " + wordInfo.nativeLang + ", formatted  as a numbered list " +
-#                     " according to the example: 6. Idealizar (verbo): En algunos casos," +
-#                     " \'dream\' se traduce como " +
-#                     "\"idealizar\", que implica crear una imagen idealizada de algo o alguien. Por ejemplo, " +
-#                     "\"Ella sueña con una vida perfecta\"."
-#             }
-#         ]
-#     ) 
-#     return parse_word_senses_completion(completion.choices[0].message.content)
+    response = chain.run(
+        text=translationRequest.sentence, 
+        source_language=translationRequest.sourceLang,
+        target_language=translationRequest.targetLang,
+    )
+    return {
+        "translation": response
+    }
 
 ISO_TO_LANG = {
     'en_US': 'American English',
