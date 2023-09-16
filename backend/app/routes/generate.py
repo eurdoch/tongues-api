@@ -23,7 +23,7 @@ class Speech(BaseModel):
     sentence: str
     voice_id: str
 
-@router.post("/generatespeech")
+@router.post("/speech")
 async def generate_speech(speech: Speech): 
     stream = generate_audio_stream(speech.voice_id, speech.sentence)
     f = BytesIO()
