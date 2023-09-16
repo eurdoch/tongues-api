@@ -9,6 +9,7 @@ from app.routes.completion import router as CompletionRouter
 from app.routes.model import router as ModelRouter
 from app.routes.suggestion import router as SuggestionRouter
 from app.routes.alphabet import router as AlphabetRouter
+from app.routes.chat import roter as ChatRouter
 from starlette.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -29,3 +30,4 @@ app.include_router(CompletionRouter)
 app.include_router(ModelRouter)
 app.include_router(SuggestionRouter)
 app.include_router(AlphabetRouter)
+app.include_router(ChatRouter)
