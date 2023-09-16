@@ -45,8 +45,6 @@ async def get_audio_transcription(
         data=data,
         headers=headers
     )
-    print(r.status_code)
-    print(r.json())
     transcription = r.json()['text']
     transcription = transcription.strip()
     return {
