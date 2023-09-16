@@ -23,6 +23,8 @@ from app.models.completion import Model
 from dotenv import load_dotenv
 load_dotenv()
 
+llm = ChatOpenAI()
+
 class CompletionRequest(BaseModel):
     prompt: str
     section: str
@@ -43,25 +45,48 @@ async def get_chat_response(
 ):
     system_template = """You are a {language} teacher who checks if the grammar of {language}
     sentences is correct.  A user will pass in a sentence and you will check the grammar.
-    ONLY return Yes if grammar is correct, otherwise return No.
+    ONLY return either Yes or No
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
     human_template = "{sentence}"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
     chain = LLMChain(
-        llm=ChatOpenAI(),
+        llm=llm,
         prompt=chat_prompt,
     )
     response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
+    print(response)
     match response:
-        case "No.":
+        case "No":
+            system_template = """You are a translator who helps check the grammar of the {language} language."""
+            system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+            human_template = """Explain the problems of the sentence {sentence} in the {language} language."""
+            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+            chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+            chain = LLMChain(
+                llm=llm,
+                prompt=chat_prompt,
+            )
+            response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
             return {
-                "response": "No.",
+                "grammar_correct": False,
+                "response": response,
             }
-        case "Yes.":
+        case "Yes":
+            system_template = """You are a young Colombian woman talking to her boyfriend.  Return a response as if you are holding a conversation."""
+            system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+            human_template = "{sentence}"
+            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+            chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+            chain = LLMChain(
+                llm=llm,
+                prompt=chat_prompt,
+            )
+            response = chain.run(sentence = completionRequest.prompt, language=completionRequest.language)
             return {
-                "response": "Yes.",
+                "grammar_correct": True,
+                "response": response
             }
         case _:
             raise Exception("Chat model did not return a valid response.")
