@@ -54,9 +54,17 @@ async def get_chat_response(
         prompt=chat_prompt,
     )
     response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
-    return {
-        "grammarCorrect": response
-    }
+    match response:
+        case "No.":
+            return {
+                "response": "No.",
+            }
+        case "Yes.":
+            return {
+                "response": "Yes.",
+            }
+        case _:
+            raise Exception("Chat model did not return a valid response.")
     # model = await Model.find_one(Model.section == completionRequest.section, Model.language == completionRequest.language)
     # completion = openai.ChatCompletion.create(
     #     model=model.name,
