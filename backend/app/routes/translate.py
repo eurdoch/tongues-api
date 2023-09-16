@@ -21,7 +21,7 @@ from fastapi import (
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
-    ChatMessagePromptTemplate,
+    ChatPromptTemplate,
 )
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
@@ -97,7 +97,7 @@ async def translate_text(
     system_prompt_message = SystemMessagePromptTemplate.from_template(system_template)
     human_template = "{text}"
     human_prompt_message = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatMessagePromptTemplate([system_prompt_message, human_prompt_message])
+    chat_prompt = ChatPromptTemplate.from_messages([system_prompt_message, human_prompt_message])
     chain = LLMChain(
         # TODO Refactor the llm to a separate file that can be accessed by all endpoints
         llm=ChatOpenAI(),
