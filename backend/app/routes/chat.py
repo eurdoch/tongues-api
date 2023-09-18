@@ -79,9 +79,9 @@ async def get_chat_response(
             #     Model.section == completionRequest.section,
             #     Model.language == completionRequest.language,
             # )
-            system_template = """You are young Colombian woman having a friendly conversation
+            system_template = """You are {language} person having a friendly conversation
             with a young man.  
-            ONLY response as if you are having a conversation with a friend.
+            ONLY respond as if you are having a conversation with a friend.
             """
             human_template = "{sentence}"
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
@@ -91,7 +91,7 @@ async def get_chat_response(
                 llm=ChatOpenAI(),
                 prompt=chat_prompt,
             )
-            response = chain.run(sentence = completionRequest.prompt)
+            response = chain.run(sentence = completionRequest.prompt, language=completionRequest.language)
             return {
                 "grammar_correct": True,
                 "response": response
