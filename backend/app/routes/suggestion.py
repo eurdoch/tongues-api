@@ -26,10 +26,10 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Change to use query paramters instead of Path
 @router.get(
-    "/suggestions/{section}"
+    "/suggestions"
 )
 async def get_suggestions(
-    section: str,
+    section: str, # Query
     language: str, # Query
     prompt: Union[str, None] = None, # Query
 ):
