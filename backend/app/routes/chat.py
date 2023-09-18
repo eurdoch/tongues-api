@@ -41,6 +41,8 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 async def get_chat_response(
     completionRequest: CompletionRequest,
 ):
+    
+
     system_template = """You are a {language} teacher who checks if the grammar of {language}
     sentences is correct.  A user will pass in a sentence and you will check the grammar.
     ONLY return either Yes or No
@@ -74,18 +76,23 @@ async def get_chat_response(
                 "response": response,
             }
         case "Yes":
-            model = await Model.find_one(
-                Model.section == completionRequest.section,
-                Model.language == completionRequest.language,
-            )
+            # model = await Model.find_one(
+            #     Model.section == completionRequest.section,
+            #     Model.language == completionRequest.language,
+            # )
+            system_template = """You are young Colombian woman having a friendly conversation
+            with a young man.  
+            ONLY response as if you are having a conversation with a friend.
+            """
             human_template = "{sentence}"
+            system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-            chat_prompt = ChatPromptTemplate.from_messages([human_message_prompt])
+            chat_prompt = ChatPromptTemplate.from_messages([human_message_prompt, system_message_prompt])
             chain = LLMChain(
-                llm=ChatOpenAI(model=model.name),
+                llm=ChatOpenAI(),
                 prompt=chat_prompt,
             )
-            response = chain.run(sentence = completionRequest.prompt, language=completionRequest.language)
+            response = chain.run(sentence = completionRequest.prompt)
             return {
                 "grammar_correct": True,
                 "response": response
