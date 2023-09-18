@@ -58,8 +58,7 @@ async def get_chat_response(
         prompt=chat_prompt,
     )
     response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
-    print(response)
-    match response:
+    match response.replace('.', ''):
         case "No":
             system_template = """You are a translator who helps check the grammar of the {language} language."""
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
