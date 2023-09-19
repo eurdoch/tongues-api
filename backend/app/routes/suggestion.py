@@ -7,7 +7,7 @@ from fastapi import (
 from typing import Union
 import os
 
-from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import (
     SystemMessagePromptTemplate,
@@ -33,18 +33,17 @@ router = APIRouter(
     "/suggestions"
 )
 async def get_suggestions(
-    section: str, # Query
     language: str, # Query
     prompt: Union[str, None] = None, # Query
 ):
-    llm = ChatOpenAI()
+    llm = OpenAI(model_name='gpt-3.5-turbo-instruct')
     if prompt == None:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation.
-        ONLY return a comma separated list of the suggested sentences.
+        ONLY return a comma separated list of the sentences.
         """
         human_template = """
-        Give me three sentences for starting a conversation in {langauge}.
+        Give me three sentences for starting a conversation in {language}.
         """
         system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
         human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
