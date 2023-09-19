@@ -36,7 +36,7 @@ async def get_suggestions(
     language: str, # Query
     prompt: Union[str, None] = None, # Query
 ):
-    llm = OpenAI(model_name='gpt-3.5-turbo-instruct')
+    llm = OpenAI(model='gpt-3.5-turbo-instruct')
     if prompt == None:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation.
