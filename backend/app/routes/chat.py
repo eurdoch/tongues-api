@@ -41,8 +41,6 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 async def get_chat_response(
     completionRequest: CompletionRequest,
 ):
-    
-
     system_template = """You are a {language} teacher who checks if the grammar of {language}
     sentences is correct.  A user will pass in a sentence and you will check the grammar.
     ONLY return either Yes or No

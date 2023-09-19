@@ -5,9 +5,15 @@ from fastapi import (
     Depends,
 )
 from typing import Union
-
-import openai
 import os
+
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import (
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    ChatPromptTemplate,
+)
 
 from app.app import app
 from app.utils.auth import is_authorized
@@ -22,8 +28,6 @@ router = APIRouter(
     dependencies=[Depends(is_authorized)],
 )
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
 # Change to use query paramters instead of Path
 @router.get(
     "/suggestions"
@@ -33,31 +37,25 @@ async def get_suggestions(
     language: str, # Query
     prompt: Union[str, None] = None, # Query
 ):
-    suggestions = []
-    if prompt is None:
-        examples = await Example.find(
-            Example.section == section, Example.language == language
-        ).to_list()
-        for example in examples[0:3]:
-            suggestions.append({
-                'sentence': example.conversation[0].sentence,
-                'audio_id': str(example.conversation[0].audio_id),
-            })
-        return suggestions
-    else:
-        model = await Model.find_one(
-            Model.section == section,
-            Model.language == language
+    llm = ChatOpenAI()
+    if prompt == None:
+        system_template = """You are a {language} translator who gives suggestions
+        for sentences to use in conversation.
+        ONLY return a comma separated list of the suggested sentences.
+        """
+        human_template = """
+        Give me three sentences for starting a conversation in {langauge}.
+        """
+        system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([
+            system_message_prompt,
+            human_message_prompt
+        ])
+        chain = LLMChain(
+            llm=llm,
+            prompt=chat_prompt
         )
-        for i in range(0, 3):
-            completion = openai.ChatCompletion.create(
-                model=model.name,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
-            )
-            suggestions.append({
-                'sentence': completion['choices'][0]['message']['content'],
-                'audio_id': None,
-            })
-        return suggestions
+        return {
+            "response": chain.run(language=language),
+        }
