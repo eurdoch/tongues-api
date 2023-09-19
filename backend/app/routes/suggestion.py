@@ -60,7 +60,7 @@ async def get_suggestions(
     else:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation. The user will input a sentence and you will
-        return three sentences to respond to that sentence using the {language} language.
+        return three sentences as suggestions to respond with.
         ONLY return a json object with the key suggestions.
         """
         human_template = "{sentence}"
