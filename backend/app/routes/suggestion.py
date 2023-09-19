@@ -57,3 +57,22 @@ async def get_suggestions(
         )
         response = chain.run(language=language)
         return json.loads(response.replace('\n', ''))
+    else:
+        system_template = """You are a {language} translator who gives suggestions
+        for sentences to use in conversation. The user will input a sentence and you will
+        return three sentences to respond to that sentence using the {language} language.
+        ONLY return a json object with the key suggestions.
+        """
+        human_template = "{sentence}"
+        system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([
+            system_message_prompt,
+            human_message_prompt
+        ])
+        chain = LLMChain(
+            llm=llm,
+            prompt=chat_prompt
+        )
+        response = chain.run(language=language, sentence=prompt)
+        return json.loads(response.replace('\n', ''))
