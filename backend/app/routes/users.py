@@ -12,7 +12,6 @@ from app.utils.auth import is_authorized
 
 router = APIRouter(
     prefix="/api/v0",
-    dependencies=[Depends(is_authorized)],
 )
 
 # TODO This is messy, all authorization should be handled with a single class/function
@@ -25,6 +24,7 @@ auther = Auther()
 
 @router.get(
     "/users",
+    dependencies=[Depends(is_authorized)],
 )
 async def get_user_by_id(
     authorization: str = Header(),
@@ -36,12 +36,20 @@ async def get_user_by_id(
     return UserDAO.parse_obj(user)
 
 # TODO require assertion of userDAO against authorization claim
-@router.put("/users")
+@router.put(
+    "/users",
+    dependencies=[Depends(is_authorized)],
+)
 async def update_user(
+    authorization: str = Header(),
     userDAO: UserDAO = Body(),
 ):
+    user_id = auther.get_user_from_jwt(authorization)
+    userFromAuth: User = await User.get(user_id)
+    if userFromAuth is None:
+        raise HTTPException(404)
     user = await User.find_one(User.email == userDAO.email)
-    if user is None:
+    if user.email != userFromAuth.email:
         raise HTTPException(404)
     fields = []
     for key in userDAO.__dict__:
@@ -73,11 +81,14 @@ async def add_user(
     inserted_user = await new_user.insert()
     return UserDAO.parse_obj(inserted_user)
 
-@router.delete("/users/{id}")
+@router.delete(
+    "/users",
+    dependencies=[Depends(is_authorized)],
+)
 async def delete_user_by_id(
     authorization: str = Header(),
 ):
-    user_id = auther.get_user_from_jwt(authorization.split()[1])
+    user_id = auther.get_user_from_jwt(authorization)
     user: User = await User.get(user_id)
     if user is None:
         raise HTTPException(401)
