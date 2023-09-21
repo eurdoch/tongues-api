@@ -41,7 +41,7 @@ async def get_suggestions(
     if prompt == None:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation. The user will input a language and you will
-        return three sentences for starting a basic conversation in that language.
+        return three simple sentences under four words for starting a conversation in that language.
         ONLY return a json object with the key suggestions.
         """
         human_template = "{language}"
