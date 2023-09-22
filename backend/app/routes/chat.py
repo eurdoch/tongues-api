@@ -63,7 +63,6 @@ async def get_chat_response(
         prompt=chat_prompt
     )
     response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
-    print(response)
     if response.replace('.', '') == "No":
         return {
             "grammarCorrect": True,
