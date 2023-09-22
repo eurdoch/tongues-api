@@ -18,25 +18,16 @@ from fastapi import (
     Depends,
 )
 
-from langchain.prompts import (
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-    ChatPromptTemplate,
-)
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import LLMChain
-
 from app.models.translate import (
     TranslationRequest, 
-    TranslationResponse, 
     WordInfo,
-    WordShortView,
     Word,
 )
 from app.app import app
 from app.utils.auth import is_authorized
 from app.utils.translate import generate_explanation
 from app.utils.generate import generate_audio_stream
+from app.utils.translate import translate
 
 session = Session(
     region_name=os.getenv('AWS_REGION'),
@@ -89,24 +80,10 @@ def parse_word_senses_completion(message: str):
 async def translate_text(
     translationRequest: TranslationRequest,
 ):
-    system_template = """You are an translator that translates 
-    {source_language} to {target_language}. The user will pass in text and 
-    you will translate the text.
-    ONLY return the translation in {target_language}.
-    """ 
-    system_prompt_message = SystemMessagePromptTemplate.from_template(system_template)
-    human_template = "{text}"
-    human_prompt_message = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_prompt_message, human_prompt_message])
-    chain = LLMChain(
-        # TODO Refactor the llm to a separate file that can be accessed by all endpoints
-        llm=ChatOpenAI(),
-        prompt=chat_prompt,
-    )
-    response = chain.run(
-        text=translationRequest.sentence, 
+    response = translate(
         source_language=translationRequest.sourceLang,
         target_language=translationRequest.targetLang,
+        sentence=translationRequest.sentence
     )
     return {
         "translation": response
@@ -144,6 +121,7 @@ ISO_TO_VOICE_ID = {
     'sv_SE': 'Astrid',
 }
 
+# TODO change to GET request using query params
 @router.post(
     "/word"
 )
