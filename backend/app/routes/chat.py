@@ -50,6 +50,7 @@ MISUNDERSTOOD_RESPONSE = {
 async def get_chat_response(
     completionRequest: CompletionRequest,
 ):
+    llm = ChatOpenAI()
     human_template = """Does the sentence {sentence} make sense in {language}? 
     ONLY reply with Yes or No
     """
@@ -61,8 +62,9 @@ async def get_chat_response(
         llm=llm,
         prompt=chat_prompt
     )
-    response = chain.run(language=completionRequest.language, sentence=completionRequest.sentence)
-    if response.replace('.', '') == "Yes":
+    response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
+    print(response)
+    if response.replace('.', '') == "No":
         return {
             "grammarCorrect": True,
             "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
@@ -77,7 +79,6 @@ async def get_chat_response(
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
 
-    llm = ChatOpenAI()
     chain = LLMChain(
         llm=llm,
         prompt=chat_prompt,
