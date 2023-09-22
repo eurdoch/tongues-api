@@ -35,12 +35,39 @@ router = APIRouter(
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+MISUNDERSTOOD_RESPONSE = {
+    "Dutch": "Het spijt me, ik begreep je niet.",
+    "English": "Sorry, I didn't understand you.",
+    "French": "Je suis désolé, je ne t'ai pas compris.",
+    "Spanish": "Lo siento, no te entendí.",
+    "Italian": "Mi dispiace, non ti ho capito.",
+    "German": "Es tut mir leid, ich habe dich nicht verstanden."
+}
+
 @router.post(
     "/chat"
 )
 async def get_chat_response(
     completionRequest: CompletionRequest,
 ):
+    human_template = """Does the sentence {sentence} make sense in {language}? 
+    ONLY reply with Yes or No
+    """
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([
+        human_message_prompt,
+    ])
+    chain = LLMChain(
+        llm=llm,
+        prompt=chat_prompt
+    )
+    response = chain.run(language=completionRequest.language, sentence=completionRequest.sentence)
+    if response.replace('.', '') == "Yes":
+        return {
+            "grammarCorrect": True,
+            "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
+        }
+
     system_template = """You are a {language} teacher who checks if the grammar of {language}
     sentences is correct.  A user will pass in a sentence and you will check the grammar.
     ONLY return either Yes or No
@@ -73,10 +100,6 @@ async def get_chat_response(
                 "response": response,
             }
         case "Yes":
-            # model = await Model.find_one(
-            #     Model.section == completionRequest.section,
-            #     Model.language == completionRequest.language,
-            # )
             system_template = """You are {language} person having a friendly conversation
             with a young man.  
             ONLY respond as if you are having a conversation with a friend.
