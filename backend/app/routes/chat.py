@@ -51,23 +51,23 @@ async def get_chat_response(
     completionRequest: CompletionRequest,
 ):
     llm = ChatOpenAI()
-    human_template = """Does the sentence {sentence} make sense in {language}? 
-    ONLY reply with Yes or No
-    """
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([
-        human_message_prompt,
-    ])
-    chain = LLMChain(
-        llm=llm,
-        prompt=chat_prompt
-    )
-    response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
-    if response.replace('.', '') == "No":
-        return {
-            "grammar_correct": True,
-            "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
-        }
+    # human_template = """Does the sentence {sentence} make sense in {language}? 
+    # ONLY reply with Yes or No
+    # """
+    # human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    # chat_prompt = ChatPromptTemplate.from_messages([
+    #     human_message_prompt,
+    # ])
+    # chain = LLMChain(
+    #     llm=llm,
+    #     prompt=chat_prompt
+    # )
+    # response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
+    # if response.replace('.', '') == "No":
+    #     return {
+    #         "grammar_correct": True,
+    #         "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
+    #     }
 
     system_template = """You are a {language} teacher who checks if the grammar of {language}
     sentences is correct.  A user will pass in a sentence and you will check the grammar.
