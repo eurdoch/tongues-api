@@ -116,7 +116,14 @@ async def get_chat_response(
         case "Yes":
             memory = ConversationBufferMemory()
             if conversation.history is not None:
-                memory.load_history_from_string(conversation.history)
+                messages = conversation.history.split('\n')
+                messages = messages[:10] if len(messages) > 10 else messages
+                for message in messages:
+                    speaker, text = message.split(':')
+                    if speaker == "Human":
+                        memory.chat_memory.add_user_message(text[1:])
+                    elif speaker == "AI":
+                        memory.chat_memory.add_ai_message(text[1:])
             template = """You are {language} person having a friendly conversation in {language}.
 
             Current conversation:
