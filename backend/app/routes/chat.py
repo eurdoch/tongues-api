@@ -65,7 +65,7 @@ async def get_chat_response(
     response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
     if response.replace('.', '') == "No":
         return {
-            "grammarCorrect": True,
+            "grammar_correct": True,
             "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
         }
 
@@ -87,7 +87,7 @@ async def get_chat_response(
         case "No":
             system_template = """You are a translator who helps check the grammar of the {language} language."""
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-            human_template = """Explain the problems of the sentence {sentence} in the {language} language."""
+            human_template = """Explain the problems of the grammar in sentence "{sentence}" using the {language} language."""
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
             chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
             chain = LLMChain(
