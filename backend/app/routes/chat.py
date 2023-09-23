@@ -26,7 +26,8 @@ load_dotenv()
 class CompletionRequest(BaseModel):
     prompt: str
     section: str
-    language: str
+    studyLang: str
+    nativeLang: str
 
 router = APIRouter(
     prefix="/api/v0",
@@ -69,8 +70,8 @@ async def get_chat_response(
     #         "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
     #     }
 
-    system_template = """You are a {language} teacher who checks if the grammar of {language}
-    sentences is correct.  A user will pass in a sentence and you will check the grammar.
+    system_template = """You are a {study_language} teacher who checks if the grammar of 
+    {study_language} sentences is correct.  A user will pass in a sentence and you will check the grammar.
     ONLY return either Yes or No
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
@@ -82,19 +83,28 @@ async def get_chat_response(
         llm=llm,
         prompt=chat_prompt,
     )
-    response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
+    response = chain.run(
+        sentence=completionRequest.prompt, 
+        study_language=completionRequest.studyLang
+    )
     match response.replace('.', ''):
         case "No":
-            system_template = """You are a translator who helps check the grammar of the {language} language."""
+            system_template = """You are a translator who helps check the grammar of the {study_language} language."""
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-            human_template = """Explain the problems of the grammar in sentence "{sentence}" using the {language} language."""
+            human_template = """Explain the problems of the grammar in {study_language} sentence "{sentence}" using 
+            the {native_language} language.
+            """
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
             chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
             chain = LLMChain(
                 llm=llm,
                 prompt=chat_prompt,
             )
-            response = chain.run(sentence=completionRequest.prompt, language=completionRequest.language)
+            response = chain.run(
+                sentence=completionRequest.prompt, 
+                study_language=completionRequest.studyLang,
+                native_language=completionRequest.nativeLang,
+            )
             return {
                 "grammar_correct": False,
                 "response": response,
