@@ -25,7 +25,6 @@ load_dotenv()
 
 class CompletionRequest(BaseModel):
     prompt: str
-    section: str
     studyLang: str
     nativeLang: str
 
