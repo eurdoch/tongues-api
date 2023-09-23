@@ -121,7 +121,7 @@ async def get_chat_response(
                 llm=ChatOpenAI(),
                 prompt=chat_prompt,
             )
-            response = chain.run(sentence = completionRequest.prompt, language=completionRequest.language)
+            response = chain.run(sentence = completionRequest.prompt, language=completionRequest.studyLang)
             return {
                 "grammar_correct": True,
                 "response": response
