@@ -37,7 +37,7 @@ iniconfig==2.0.0
 jmespath==1.0.1
 jsonpatch==1.33
 jsonpointer==2.4
-langchain==0.0.300
+langchain @ git+https://github.com/jojeyh/langchain.git@668a21e885e4b6eaa36cc1e63eaa9b17a1317850#subdirectory=libs/langchain
 langsmith==0.0.40
 lazy-model==0.0.5
 marshmallow==3.20.1
@@ -88,6 +88,7 @@ tqdm==4.65.0
 trio==0.22.1
 typing-inspect==0.9.0
 typing_extensions==4.7.1
+UNKNOWN @ git+https://github.com/jojeyh/langchain.git@8602a32b7e9d8f7e806dfb0741d2e102e6be9751
 urllib3==1.26.16
 uvicorn==0.22.0
 uvloop==0.17.0
