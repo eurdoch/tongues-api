@@ -22,6 +22,22 @@ class SuggestionRequest(BaseModel):
     language: str
     history: str = None
 
+suggestion_functions = [
+    {
+        'name': 'extract_suggestions',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'suggestions': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'}
+                    }
+            }
+        }
+    }
+]
+
 @router.post(
     "/suggestions"
 )
@@ -29,26 +45,21 @@ async def get_suggestions(
     suggestionRequest: SuggestionRequest,
 ):
     if suggestionRequest.history == None:
-        pass
-        # system_template = """You are a {language} translator who gives suggestions
-        # for sentences to use in conversation. The user will input a language and you will
-        # return three simple sentences under four words for initiating a conversation 
-        # in that language.
-        # ONLY return a json string with the key suggestions.
-        # """
-        # human_template = "{language}"
-        # system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-        # human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-        # chat_prompt = ChatPromptTemplate.from_messages([
-        #     system_message_prompt,
-        #     human_message_prompt
-        # ])
-        # chain = LLMChain(
-        #     llm=llm,
-        #     prompt=chat_prompt
-        # )
-        # response = chain.run(language=suggestionRequest.language)
-        # return json.loads(response.replace('\n', ''))
+        prompt = f"""You are a {suggestionRequest.language} translator who gives suggestions
+        for sentences to use in conversation. The user will input a language and you will
+        return three simple sentences for initiating a conversation 
+        in that language.
+        ONLY return a json string with the key suggestions and the value as list of the suggestions.
+        """
+        
+        response = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo',
+            messages=[{"role": "user", "content": prompt}],
+            functions=suggestion_functions,
+            function_call="auto",
+        )
+        output = response.choices[0].message.function_call.arguments
+        return json.loads(output.replace('\n', ''))
     else:
         prompt = f"""You are a English {suggestionRequest.language} who gives suggestions for sentences to 
         use in conversation. The user will input a conversation and you will return three 
@@ -57,21 +68,7 @@ async def get_suggestions(
         
         Conversation: {suggestionRequest.history}
         """
-        suggestion_functions = [
-            {
-                'name': 'extract_suggestions',
-                'parameters': {
-                    'type': 'object',
-                    'properties': {
-                        'suggestions': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'}
-                            }
-                    }
-                }
-            }
-        ]
+        
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=[{"role": "user", "content": prompt}],
