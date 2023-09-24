@@ -1,14 +1,10 @@
 from fastapi import (
     APIRouter,
-    Header,
-    HTTPException,
     Depends,
 )
-from typing import Union
-import os
 import json
+from pydantic import BaseModel
 
-from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import (
     SystemMessagePromptTemplate,
@@ -28,18 +24,21 @@ router = APIRouter(
     dependencies=[Depends(is_authorized)],
 )
 
+class SuggestionRequest(BaseModel):
+    language: str
+    history: str
+
 @router.post(
     "/suggestions"
 )
 async def get_suggestions(
-    language: str, # Query
-    prompt: Union[str, None] = None, # Query
+    suggestionRequest: SuggestionRequest,
 ):
-    if prompt == None:
+    if suggestionRequest.history == None:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation. The user will input a language and you will
         return three simple sentences under four words for starting a conversation in that language.
-        ONLY return a json object with the key suggestions.
+        ONLY return a json string with the key suggestions.
         """
         human_template = "{language}"
         system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
@@ -52,16 +51,16 @@ async def get_suggestions(
             llm=llm,
             prompt=chat_prompt
         )
-        response = chain.run(language=language)
+        response = chain.run(language=suggestionRequest.language)
         return json.loads(response.replace('\n', ''))
     else:
         system_template = """You are a {language} translator who gives suggestions
-        for sentences to use in conversation. The user will input a sentence and you will
+        for sentences to use in conversation. The user will input a conversation and you will
         return three simple sentences as suggestions to respond with.
         ONLY return a json string with the key suggestions and the value as list of the 
         suggestions.
         """
-        human_template = "{sentence}"
+        human_template = "{history}"
         system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
         human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
         chat_prompt = ChatPromptTemplate.from_messages([
@@ -72,6 +71,6 @@ async def get_suggestions(
             llm=llm,
             prompt=chat_prompt
         )
-        response = chain.run(language=language, sentence=prompt)
+        response = chain.run(language=suggestionRequest.language, history=suggestionRequest.history)
         print(response)
         return json.loads(response.replace('\n', ''))
