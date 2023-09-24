@@ -6,7 +6,7 @@ import json
 from pydantic import BaseModel
 
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
@@ -29,7 +29,7 @@ class SuggestionRequest(BaseModel):
     language: str
     history: str = None
 
-instruct_llm = ChatOpenAI(model="gpt-3.5-turbo-instruct")
+instruct_llm = OpenAI(model="gpt-3.5-turbo-instruct")
 
 @router.post(
     "/suggestions"
