@@ -83,10 +83,10 @@ async def get_chat_response(
     print(response)
     match response.replace('.', ''):
         case "No":
-            system_template = """You are a translator who helps check the grammar of the {study_language} language."""
+            system_template = """You are a language teacher who helps check the grammar of the {study_language} language."""
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-            human_template = """Explain the problems of the grammar in {study_language} sentence "{sentence}" using 
-            the {native_language} language.
+            human_template = """Explain the problems of the grammar in sentence "{sentence}" in 
+            the {study_language} language, using the {native_language} to explain.
             """
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
             chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
@@ -102,6 +102,7 @@ async def get_chat_response(
             return {
                 "grammar_correct": False,
                 "response": response,
+                "history": "",
             }
         case "Yes":
             return get_chat_response_by_language(
