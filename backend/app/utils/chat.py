@@ -19,17 +19,20 @@ def get_chat_response_by_language(
                 memory.chat_memory.add_user_message(text[1:])
             elif speaker == "AI":
                 memory.chat_memory.add_ai_message(text[1:])
-    template = """{system_message}
+    template = system_message + """
 
     Current conversation:
     {history}
     Human: {input}
     AI:"""
-    prompt_template = PromptTemplate(input_variables=["history", "input", "language"], template=template)
+    prompt_template = PromptTemplate(
+        input_variables=["history", "input", "language"], 
+        template=template
+    )
 
     conversation_chain = ConversationChain(
         llm=llm,
-        prompt=prompt_template.partial(language=language, system_message=system_message),
+        prompt=prompt_template.partial(language=language),
         verbose=True,
         memory=memory
     )
