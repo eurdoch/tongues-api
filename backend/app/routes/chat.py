@@ -22,9 +22,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema import SystemMessage
 
 from app.utils.auth import is_authorized
-
-from dotenv import load_dotenv
-load_dotenv()
+from app.app import llm
 
 class Conversation(BaseModel):
     sentence: str
@@ -36,8 +34,6 @@ router = APIRouter(
     prefix="/api/v0",
     dependencies=[Depends(is_authorized)],
 )
-
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 MISUNDERSTOOD_RESPONSE = {
     "Dutch": "Het spijt me, ik begreep je niet.",
@@ -54,8 +50,6 @@ MISUNDERSTOOD_RESPONSE = {
 async def get_chat_response(
     conversation: Conversation,
 ):
-    llm = ChatOpenAI()
-    
     # human_template = """Does the sentence {sentence} make sense in {language}? 
     # ONLY reply with Yes or No
     # """

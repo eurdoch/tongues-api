@@ -16,10 +16,8 @@ from langchain.prompts import (
     ChatPromptTemplate,
 )
 
-from app.app import app
+from app.app import llm
 from app.utils.auth import is_authorized
-from app.models.example import Example
-from app.models.completion import Model
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -37,7 +35,6 @@ async def get_suggestions(
     language: str, # Query
     prompt: Union[str, None] = None, # Query
 ):
-    llm = ChatOpenAI()
     if prompt == None:
         system_template = """You are a {language} translator who gives suggestions
         for sentences to use in conversation. The user will input a language and you will
