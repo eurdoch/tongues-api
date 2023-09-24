@@ -3,12 +3,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationChain
 from app.app import llm
 
-def get_chat_response_by_language(
-    sentence: str,
-    language: str,
-    history: str = None,
-    system_message: str = "You are {language} person having a friendly conversation in {language}."
-):
+def build_memory(history: str) -> ConversationBufferMemory:
     memory = ConversationBufferMemory()
     if history is not None:
         messages = history.split('\n')
@@ -19,6 +14,16 @@ def get_chat_response_by_language(
                 memory.chat_memory.add_user_message(text[1:])
             elif speaker == "AI":
                 memory.chat_memory.add_ai_message(text[1:])
+    return memory
+
+
+def get_chat_response_by_language(
+    sentence: str,
+    language: str,
+    history: str = None,
+    system_message: str = "You are {language} person having a friendly conversation in {language}."
+):
+    memory = build_memory(history=history)
     template = system_message + """
 
     Current conversation:
@@ -44,3 +49,35 @@ def get_chat_response_by_language(
         "history": history,
         "response": response
     }
+
+def get_suggestions_by_language(
+    history: str,
+    language: str,
+    system_message: str,
+):
+    memory = build_memory(history)
+    template = system_message + """
+
+    Current conversation:
+    {history}
+    AI:"""
+    prompt_template = PromptTemplate(
+        input_variables=["history", "language"], 
+        template=template
+    )
+    conversation_chain = ConversationChain(
+        llm=llm,
+        prompt=prompt_template.partial(language=language),
+        verbose=True,
+        memory=memory
+    )
+
+    suggestions = []
+    for _ in range(0,3):
+        suggestions.append(conversation_chain.predict())
+
+    return {
+        "suggestions": suggestions
+    }
+    
+
