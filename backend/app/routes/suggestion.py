@@ -61,7 +61,7 @@ async def get_suggestions(
     for conversations in {language}.  Given the following conversation, 
     suggest a response to continue the conversation."""
     return get_suggestions_by_language(
-        langauge=language,
+        language=language,
         history=history,
         system_message=system_message
     )
