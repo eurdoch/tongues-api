@@ -125,16 +125,19 @@ async def get_chat_response(
             AI:"""
             prompt_template = PromptTemplate(input_variables=["history", "input", "language"], template=template)
 
-            conversation = ConversationChain(
+            conversation_chain = ConversationChain(
                 llm=llm,
                 prompt=prompt_template.partial(language=conversation.studyLang),
                 verbose=True,
                 memory=memory
             )
+            response = conversation_chain.predict(input=conversation.sentence)
+            history = conversation_chain.memory.buffer_as_str
 
             return {
                 "grammar_correct": True,
-                "response": conversation.predict(input=conversation.sentence)
+                "history": history,
+                "response": response
             }
         case _:
             raise Exception("Chat model did not return a valid response.")
