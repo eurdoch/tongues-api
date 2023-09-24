@@ -6,6 +6,7 @@ import json
 from pydantic import BaseModel
 
 from langchain.chains import LLMChain
+from langchain.chat_models import ChatOpenAI
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
@@ -27,6 +28,8 @@ router = APIRouter(
 class SuggestionRequest(BaseModel):
     language: str
     history: str = None
+
+instruct_llm = ChatOpenAI(model="gpt-3.5-turbo-instruct")
 
 @router.post(
     "/suggestions"
@@ -70,7 +73,7 @@ async def get_suggestions(
             human_message_prompt
         ])
         chain = LLMChain(
-            llm=llm,
+            llm=instruct_llm,
             prompt=chat_prompt
         )
         response = chain.run(
