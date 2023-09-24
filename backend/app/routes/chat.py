@@ -6,9 +6,7 @@ from fastapi import (
     Depends,
 )
 from pydantic import BaseModel
-import os
 
-import openai
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
@@ -16,13 +14,10 @@ from langchain.prompts import (
     PromptTemplate,
 )
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferMemory
-from langchain.schema import SystemMessage
 
 from app.utils.auth import is_authorized
 from app.app import llm
+from app.utils.chat import get_chat_response_by_language
 
 class Conversation(BaseModel):
     sentence: str
@@ -108,37 +103,10 @@ async def get_chat_response(
                 "response": response,
             }
         case "Yes":
-            memory = ConversationBufferMemory()
-            if conversation.history is not None:
-                messages = conversation.history.split('\n')
-                messages = messages[:10] if len(messages) > 10 else messages
-                for message in messages:
-                    speaker, text = message.split(':')
-                    if speaker == "Human":
-                        memory.chat_memory.add_user_message(text[1:])
-                    elif speaker == "AI":
-                        memory.chat_memory.add_ai_message(text[1:])
-            template = """You are {language} person having a friendly conversation in {language}.
-
-            Current conversation:
-            {history}
-            Human: {input}
-            AI:"""
-            prompt_template = PromptTemplate(input_variables=["history", "input", "language"], template=template)
-
-            conversation_chain = ConversationChain(
-                llm=llm,
-                prompt=prompt_template.partial(language=conversation.studyLang),
-                verbose=True,
-                memory=memory
+            return get_chat_response_by_language(
+                sentence=conversation.sentence,
+                language=conversation.studyLang,
+                history=conversation.history
             )
-            response = conversation_chain.predict(input=conversation.sentence)
-            history = conversation_chain.memory.buffer_as_str
-
-            return {
-                "grammar_correct": True,
-                "history": history,
-                "response": response
-            }
         case _:
             raise Exception("Chat model did not return a valid response.")
