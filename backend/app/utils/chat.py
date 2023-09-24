@@ -38,7 +38,6 @@ def get_chat_response_by_language(
     conversation_chain = ConversationChain(
         llm=llm,
         prompt=prompt_template.partial(language=language),
-        verbose=True,
         memory=memory
     )
     response = conversation_chain.predict(input=sentence)

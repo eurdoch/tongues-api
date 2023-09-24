@@ -80,6 +80,7 @@ async def get_chat_response(
         sentence=conversation.sentence, 
         study_language=conversation.studyLang
     )
+    print(response)
     match response.replace('.', ''):
         case "No":
             system_template = """You are a translator who helps check the grammar of the {study_language} language."""
