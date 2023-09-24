@@ -19,7 +19,7 @@ def get_chat_response_by_language(
                 memory.chat_memory.add_user_message(text[1:])
             elif speaker == "AI":
                 memory.chat_memory.add_ai_message(text[1:])
-    template = """{system_message}
+    template = """{}
 
     Current conversation:
     {history}
