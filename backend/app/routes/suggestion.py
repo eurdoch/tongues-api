@@ -78,4 +78,5 @@ async def get_suggestions(
             functions=suggestion_functions,
             function_call="auto",
         )
-        return json.loads(response.replace('\n', ''))
+        output = response.choices[0].message.function_call.arguments
+        return json.loads(output.replace('\n', ''))
