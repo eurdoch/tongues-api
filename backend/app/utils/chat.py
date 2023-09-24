@@ -21,7 +21,9 @@ def get_chat_response_by_language(
     sentence: str,
     language: str,
     history: str = None,
-    system_message: str = "You are {language} person having a friendly conversation in {language}."
+    system_message: str = """You are {language} person having a friendly conversation in {language}.
+    ONLY respond as if you are a real person having a conversation.
+    """
 ):
     memory = build_memory(history=history)
     template = system_message + """
