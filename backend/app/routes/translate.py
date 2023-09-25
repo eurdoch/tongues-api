@@ -122,16 +122,18 @@ ISO_TO_VOICE_ID = {
 }
 
 # TODO change to GET request using query params
-@router.post(
+@router.get(
     "/word"
 )
-async def explain_word(
-    wordInfo: WordInfo,
+async def get_word(
+    word: str,
+    nativeLang: str,
+    studyLang: str,
 ):
-    parsedNativeLang = wordInfo.nativeLang.replace('-', '_')
-    parsedStudyLang = wordInfo.studyLang.replace('-', '_')
+    parsedNativeLang = nativeLang.replace('-', '_')
+    parsedStudyLang = studyLang.replace('-', '_')
     db_word = await Word.find_one(
-       Word.word == wordInfo.word,
+       Word.word == word,
        Word.language == parsedStudyLang,
     )
     if db_word is None or db_word.explanation.__dict__[parsedNativeLang] == "":
@@ -141,7 +143,7 @@ async def explain_word(
                 {
                     "role": "user", 
                     "content": "Explain the " + ISO_TO_LANG[parsedStudyLang] + " word " 
-                        + "'" + wordInfo.word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
+                        + "'" + word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
                         + " language, with the explanation written in the " + ISO_TO_LANG[parsedNativeLang]
                         + " language. Include the various translations of the word in the "
                         + ISO_TO_LANG[parsedNativeLang] + " language."
@@ -156,7 +158,7 @@ async def explain_word(
             # generate audio of word
             stream = generate_audio_stream(
                 voice_id=ISO_TO_VOICE_ID[parsedStudyLang],
-                text=wordInfo.word,
+                text=word,
             )
             f = BytesIO()
             with closing(stream) as stream:
@@ -168,7 +170,7 @@ async def explain_word(
             content = f.read()
             audio_id = await app.audio_bucket.upload_from_stream("test_file", content, metadata={"contentType": "audio/mp3"})
             new_word = Word(
-                word=wordInfo.word,
+                word=word,
                 language=parsedStudyLang,
                 explanation=explanation,
                 audio_id=audio_id,
