@@ -138,7 +138,7 @@ async def get_word(
     )
     if db_word is None or db_word.explanation.__dict__[parsedNativeLang] == "":
         completion = openai.ChatCompletion.create(
-            model='gpt-4',
+            model='gpt-3.5-turbo',
             messages=[
                 {
                     "role": "user", 
