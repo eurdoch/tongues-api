@@ -61,12 +61,13 @@ async def get_suggestions(
         output = response.choices[0].message.function_call.arguments
         return json.loads(output.replace('\n', ''))
     else:
-        prompt = f"""You are a English {suggestionRequest.language} who gives suggestions for sentences to 
-        use in conversation. The user will input a conversation and you will return three 
-        simple sentences as suggestions that the Human would respond with.
-        ONLY return a json string with the key suggestions and the value as list of the suggestions.
+        prompt = f"""You are a {suggestionRequest.language} teacher who gives suggestions for sentences to 
+        use in conversation. Given the conversation
         
-        Conversation: {suggestionRequest.history}
+        {suggestionRequest.history}
+        Human:
+
+        give 3 suggestions for how to complete the last statement from the human.
         """
         
         response = openai.ChatCompletion.create(
