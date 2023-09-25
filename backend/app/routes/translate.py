@@ -16,11 +16,11 @@ from fastapi import (
     Body,
     Path,
     Depends,
+    Query,
 )
 
 from app.models.translate import (
     TranslationRequest, 
-    WordInfo,
     Word,
 )
 from app.app import app
@@ -56,23 +56,6 @@ router = APIRouter(
     prefix="/api/v0",
     dependencies=[Depends(is_authorized)],
 )
-
-def parse_word_senses_completion(message: str):
-    inds = []
-    senses = []
-    for (i, c) in enumerate(message):
-        if c.isnumeric():
-            inds.append(i)        
-    for (i, spliti) in enumerate(inds):
-        substring = ""
-        if i != 0:
-            substring = message[inds[i-1]:inds[i]]
-            if ':' in substring:
-                sense, explanation = substring.split(':')
-                sense = sense.split('.')[1].split('(')[0].strip()
-                explanation = explanation.strip()
-                senses.append({'sense': sense, 'explanation': explanation})
-    return senses
 
 @router.post(
     "/translate"
@@ -126,9 +109,9 @@ ISO_TO_VOICE_ID = {
     "/word"
 )
 async def get_word(
-    word: str,
-    nativeLang: str,
-    studyLang: str,
+    word: str = Query(),
+    nativeLang: str = Query(),
+    studyLang: str = Query(),
 ):
     parsedNativeLang = nativeLang.replace('-', '_')
     parsedStudyLang = studyLang.replace('-', '_')
