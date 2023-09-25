@@ -45,70 +45,8 @@ MISUNDERSTOOD_RESPONSE = {
 async def get_chat_response(
     conversation: Conversation,
 ):
-    # human_template = """Does the sentence {sentence} make sense in {language}? 
-    # ONLY reply with Yes or No
-    # """
-    # human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    # chat_prompt = ChatPromptTemplate.from_messages([
-    #     human_message_prompt,
-    # ])
-    # chain = LLMChain(
-    #     llm=llm,
-    #     prompt=chat_prompt
-    # )
-    # response = chain.run(language=completionRequest.language, sentence=completionRequest.prompt)
-    # if response.replace('.', '') == "No":
-    #     return {
-    #         "grammar_correct": True,
-    #         "response": MISUNDERSTOOD_RESPONSE[completionRequest.language]
-    #     }
-
-    system_template = """You are a {study_language} teacher who checks if the grammar of 
-    {study_language} sentences is correct.  A user will pass in a sentence and you will check the grammar.
-    ONLY return either Yes or No
-    """
-    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-    human_template = "{sentence}"
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-
-    chain = LLMChain(
-        llm=llm,
-        prompt=chat_prompt,
+    return get_chat_response_by_language(
+        sentence=conversation.sentence,
+        language=conversation.studyLang,
+        history=conversation.history
     )
-    response = chain.run(
-        sentence=conversation.sentence, 
-        study_language=conversation.studyLang
-    )
-    print(response)
-    match response.replace('.', ''):
-        case "No":
-            system_template = """You are a language teacher who helps check the grammar of the {study_language} language."""
-            system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-            human_template = """Explain the problems of the grammar in sentence "{sentence}" in 
-            the {study_language} language, using the {native_language} to explain.
-            """
-            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-            chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-            chain = LLMChain(
-                llm=llm,
-                prompt=chat_prompt,
-            )
-            response = chain.run(
-                sentence=conversation.sentence, 
-                study_language=conversation.studyLang,
-                native_language=conversation.nativeLang,
-            )
-            return {
-                "grammar_correct": False,
-                "response": response,
-                "history": "",
-            }
-        case "Yes":
-            return get_chat_response_by_language(
-                sentence=conversation.sentence,
-                language=conversation.studyLang,
-                history=conversation.history
-            )
-        case _:
-            raise Exception("Chat model did not return a valid response.")
