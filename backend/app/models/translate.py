@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Dict
 from beanie import Document, PydanticObjectId
 
 class TranslationRequest(BaseModel):
@@ -15,17 +16,11 @@ class WordInfo(BaseModel):
     studyLang: str
     nativeLang: str
 
-class Explanation(BaseModel):
-    nl_NL: str = ""
-    es_US: str = ""
-    en_US: str = ""
-    de_DE: str = ""
-
 class Word(Document):
     audio_id: PydanticObjectId
     word: str
     language: str
-    explanation: Explanation
+    explanation: Dict[str, str]
 
 class WordShortView(BaseModel):
     audio_id: PydanticObjectId

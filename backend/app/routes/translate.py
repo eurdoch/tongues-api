@@ -25,7 +25,6 @@ from app.models.translate import (
 )
 from app.app import app
 from app.utils.auth import is_authorized
-from app.utils.translate import generate_explanation
 from app.utils.generate import generate_audio_stream
 from app.utils.translate import translate
 
@@ -119,7 +118,7 @@ async def get_word(
        Word.word == word,
        Word.language == parsedStudyLang,
     )
-    if db_word is None or db_word.explanation.__dict__[parsedNativeLang] == "":
+    if db_word is None or parsedNativeLang not in db_word.explanation:
         completion = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=[
@@ -134,10 +133,8 @@ async def get_word(
             ]
         ) 
         if db_word is None:
-            explanation = generate_explanation(
-                explanation=completion.choices[0].message.content,
-                language=parsedNativeLang,
-            )
+            explanation = {}
+            explanation[parsedNativeLang] = completion.choices[0].message.content
             # generate audio of word
             stream = generate_audio_stream(
                 voice_id=ISO_TO_VOICE_ID[parsedStudyLang],
@@ -161,20 +158,20 @@ async def get_word(
             await new_word.save()
             return_word = await Word.find_one(Word.word == new_word.word)
             return_word = return_word.__dict__
-            return_word['explanation'] = getattr(return_word['explanation'], parsedNativeLang)
+            return_word['explanation'] = return_word['explanation'][parsedNativeLang]
             return_word['audio_id'] = str(return_word['audio_id'])
             return return_word
         else:
-            db_word.explanation.__setattr__(parsedNativeLang, completion.choices[0].message.content)
+            db_word.explanation[parsedNativeLang] = completion.choices[0].message.content
             await db_word.save()
             return_word = await Word.find_one(Word.word == db_word.word)
             return_word = return_word.__dict__
-            return_word['explanation'] = getattr(return_word['explanation'], parsedNativeLang)
+            return_word['explanation'] = return_word['explanation'][parsedNativeLang]
             return_word['audio_id'] = str(return_word['audio_id'])
             return return_word
     else:
         return_word = await Word.find_one(Word.word == db_word.word)
         return_word = return_word.__dict__
-        return_word['explanation'] = getattr(return_word['explanation'], parsedNativeLang)
+        return_word['explanation'] = return_word['explanation'][parsedNativeLang]
         return_word['audio_id'] = str(return_word['audio_id'])
         return return_word

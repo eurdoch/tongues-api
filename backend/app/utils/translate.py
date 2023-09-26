@@ -1,5 +1,3 @@
-from app.models.translate import Explanation
-
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import (
@@ -7,12 +5,6 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-
-def generate_explanation(explanation: str, language: str):
-    expl_dict = {}
-    for field in Explanation.__fields__:
-        expl_dict[field] = explanation if field == language else ""
-    return Explanation.parse_obj(expl_dict)
 
 def translate(source_language: str, target_language, sentence: str):
     system_template = """You are an translator that translates 
