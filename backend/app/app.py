@@ -17,7 +17,7 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.db = AsyncIOMotorClient(CONFIG.mongo_uri).glosso
+    app.db = AsyncIOMotorClient(CONFIG.mongo_uri).grawk
     app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
     await init_beanie(
         app.db, 
