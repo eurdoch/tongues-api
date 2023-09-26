@@ -6,7 +6,7 @@ class Settings(BaseModel):
     """Server config settings"""
 
     # Mongo Engine settings
-    mongo_uri = config("MONGO_URI", default="mongodb://mongo:27017")
+    mongo_uri = config("MONGO_URI")
 
     testing = config("TESTING", default=False, cast=bool)
 

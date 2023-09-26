@@ -11,10 +11,6 @@ services:
       - ./conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
       - ./glosso/dist:/usr/local/data/dist
-  mongo:
-    image: mongo:latest
-    volumes:
-      - mongo:/data/db
   backend:
     build:
       context: ./backend
