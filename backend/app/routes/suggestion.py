@@ -8,7 +8,6 @@ from pydantic import BaseModel
 import openai
 
 from app.utils.auth import is_authorized
-from app.utils.chat import get_suggestions_by_language
 
 from dotenv import load_dotenv
 load_dotenv()

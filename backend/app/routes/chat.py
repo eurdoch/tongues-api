@@ -50,3 +50,12 @@ async def get_chat_response(
         language=conversation.studyLang,
         history=conversation.history
     )
+
+@router.post(
+    "/grammar"
+)
+async def check_grammar(
+    sentence: str,
+    language: str,
+):
+    return check_grammar(sentence=sentence, language=language)

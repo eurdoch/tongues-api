@@ -1,6 +1,9 @@
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-from langchain.chains import ConversationChain
+from langchain.chains import (
+    ConversationChain,
+    LLMChain,
+)
 from app.app import llm
 
 def build_memory(history: str) -> ConversationBufferMemory:
@@ -15,6 +18,28 @@ def build_memory(history: str) -> ConversationBufferMemory:
             elif speaker == "AI":
                 memory.chat_memory.add_ai_message(text[1:])
     return memory
+
+def check_language(
+    sentence: str,
+    language: str,
+):
+    prompt = PromptTemplate.from_template("""Is the sentence "{sentence}" written in the 
+                                          language {language}? Reply with ONLY Yes or No""")
+    chain = LLMChain(
+        llm=llm,
+        prompt=prompt,
+    )
+    response = chain.run({
+        "language": language,
+        "sentence": sentence,
+    })
+# def check_grammar(
+#     sentence: str,
+#     language: str,
+# ):
+#     system_message: str = """You are a {language} teacher who checks the grammar of sentences.
+#     Check the grammar of sentence below.  If it is correct, reply """
+#     prompt_template = PromptTemplate.from_template(input_variables=["language"] system_message)
 
 
 def get_chat_response_by_language(
