@@ -9,7 +9,20 @@ from langchain.chains import (
     ConversationChain,
     LLMChain,
 )
+from langchain.chat_models import ChatOpenAI
 from app.app import llm
+
+llmzerotemp = ChatOpenAI(temperature=0.0)
+llm4 = ChatOpenAI(model="gpt-4")
+
+MISUNDERSTOOD_RESPONSE = {
+    "Dutch": "Het spijt me, ik begreep je niet.",
+    "English": "Sorry, I didn't understand you.",
+    "French": "Je suis désolé, je ne t'ai pas compris.",
+    "Spanish": "Lo siento, no te entendí.",
+    "Italian": "Mi dispiace, non ti ho capito.",
+    "German": "Es tut mir leid, ich habe dich nicht verstanden."
+}
 
 def build_memory(history: str) -> ConversationBufferMemory:
     memory = ConversationBufferMemory()
@@ -24,63 +37,99 @@ def build_memory(history: str) -> ConversationBufferMemory:
                 memory.chat_memory.add_ai_message(text[1:])
     return memory
 
-def check_text_grammar(
+def is_valid_text(
     text: str,
     language: str,
 ):
-    system_template = """You are a {language} teacher who checks the grammar of {language} text.
-    The user  will input text and you will check whether it contains correct grammar in {language}.
-    ONLY return Yes or No
-    """
-    human_template = "{text}"
-    system_prompt = SystemMessagePromptTemplate.from_template(system_template)
-    human_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([
-        system_prompt,
-        human_prompt
-    ])
+    template = """Does the text "{text}" contain words from the {language} language?
+    ONLY return Yes or No"""
+    prompt = PromptTemplate.from_template(template) 
     chain = LLMChain(
-        llm=llm,
-        prompt=chat_prompt,
+        llm=llmzerotemp,
+        prompt=prompt,
+    )
+    return chain.run({
+        "text": text,
+        "language": language
+    })
+
+def is_valid_grammar(
+    text: str,
+    language: str,
+):
+    template = """Is the text {text} gramatically correct in the {language} language?  ONLY respond with yes or no"""
+    prompt = PromptTemplate.from_template(template)
+    chain = LLMChain(
+        llm=llmzerotemp,
+        prompt=prompt,
     )
     return chain.run({
         "language": language,
         "text": text,
     })
 
+def get_grammar_explanation(
+    text: str,
+    language: str
+):
+    template = """Explain why the text {text} is gramatically incorrect in {language} language."""
+    prompt = PromptTemplate.from_template(template)
+    chain = LLMChain(
+        llm=llm,
+        prompt=prompt
+    )
+    return chain.run({
+        "language": language,
+        "text": text
+    })
+
 def get_chat_response_by_language(
-    sentence: str,
+    text: str,
     language: str,
     history: str = None,
     system_message: str = """You are {language} person having a friendly conversation in {language}.
     ONLY respond as if you are a real person having a conversation.
     """
 ):
-    memory = build_memory(history=history)
-    template = system_message + """
+    if is_valid_text(text=text, language=language).replace(".", "") == "No":
+        if is_valid_grammar(text=text, language=language).replace(".", "") == "No":
+            memory = build_memory(history=history)
+            template = system_message + """
 
-    Current conversation:
-    {history}
-    Human: {input}
-    AI:"""
-    prompt_template = PromptTemplate(
-        input_variables=["history", "input", "language"], 
-        template=template
-    )
+            Current conversation:
+            {history}
+            Human: {input}
+            AI:"""
+            prompt_template = PromptTemplate(
+                input_variables=["history", "input", "language"], 
+                template=template
+            )
 
-    conversation_chain = ConversationChain(
-        llm=llm,
-        prompt=prompt_template.partial(language=language),
-        memory=memory
-    )
-    response = conversation_chain.predict(input=sentence)
-    history = conversation_chain.memory.buffer_as_str
+            conversation_chain = ConversationChain(
+                llm=llm,
+                prompt=prompt_template.partial(language=language),
+                memory=memory
+            )
+            response = conversation_chain.predict(input=text)
+            history = conversation_chain.memory.buffer_as_str
 
-    return {
-        "grammar_correct": True,
-        "history": history,
-        "response": response
-    }
+            return {
+                "grammar_correct": True,
+                "history": history,
+                "response": response
+            }
+        else:
+            return {
+                "grammarCorrect": False,
+                "history": history,
+                "response": get_grammar_explanation(text=text, language=language),
+            }
+    else:
+        return {
+            "grammarCorrect": False,
+            "history": history,
+            "response": MISUNDERSTOOD_RESPONSE[language],
+        }
 
 def get_suggestions_by_language(
     history: str,
@@ -88,6 +137,7 @@ def get_suggestions_by_language(
     system_message: str,
 ):
     memory = build_memory(history)
+    # TODO This template should end with Human:
     template = system_message + """
 
     Current conversation:
