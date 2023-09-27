@@ -134,13 +134,13 @@ def get_chat_response_by_language(
             "response": MISUNDERSTOOD_RESPONSE[language],
         }
 
+# TODO This is not being used, phase out
 def get_suggestions_by_language(
     history: str,
     language: str,
     system_message: str,
 ):
     memory = build_memory(history)
-    # TODO This template should end with Human:
     template = system_message + """
 
     Current conversation:
