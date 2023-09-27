@@ -25,6 +25,10 @@ class Conversation(BaseModel):
     nativeLang: str
     history: str = None
 
+class Sentence(BaseModel):
+    text: str
+    language: str
+
 router = APIRouter(
     prefix="/api/v0",
     dependencies=[Depends(is_authorized)],
@@ -55,7 +59,6 @@ async def get_chat_response(
     "/grammar"
 )
 async def check_grammar(
-    sentence: str,
-    language: str,
+    sentence: Sentence
 ):
-    return check_grammar(sentence=sentence, language=language)
+    return check_grammar(sentence=sentence.text, language=sentence.language)
