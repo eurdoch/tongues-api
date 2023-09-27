@@ -114,18 +114,21 @@ def get_chat_response_by_language(
             history = conversation_chain.memory.buffer_as_str
 
             return {
+                "is_valid": True,
                 "grammar_correct": True,
                 "history": history,
                 "response": response
             }
         else:
             return {
+                "is_valid": True,
                 "grammar_correct": False,
                 "history": history,
                 "response": get_grammar_explanation(text=text, language=language),
             }
     else:
         return {
+            "is_valid": False,
             "grammar_correct": False,
             "history": history,
             "response": MISUNDERSTOOD_RESPONSE[language],
