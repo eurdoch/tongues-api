@@ -1,8 +1,8 @@
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import (
     PromptTemplate,
-    SystemPromptTemplate,
-    HumanPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
 from langchain.chains import (
@@ -33,8 +33,8 @@ def check_text_grammar(
     ONLY return Yes or No
     """
     human_template = "{text}"
-    system_prompt = SystemMessagePrompt.from_template(system_template)
-    human_prompt = HumanMessagePrompt.from_template(human_template)
+    system_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages([
         system_prompt,
         human_prompt
