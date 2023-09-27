@@ -120,13 +120,13 @@ def get_chat_response_by_language(
             }
         else:
             return {
-                "grammarCorrect": False,
+                "grammar_correct": False,
                 "history": history,
                 "response": get_grammar_explanation(text=text, language=language),
             }
     else:
         return {
-            "grammarCorrect": False,
+            "grammar_correct": False,
             "history": history,
             "response": MISUNDERSTOOD_RESPONSE[language],
         }
