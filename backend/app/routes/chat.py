@@ -18,6 +18,7 @@ from langchain.chains import LLMChain
 from app.utils.auth import is_authorized
 from app.app import llm
 from app.utils.chat import get_chat_response_by_language
+from app.utils.chat import check_text_grammar
 
 class Conversation(BaseModel):
     sentence: str
@@ -61,4 +62,4 @@ async def get_chat_response(
 async def check_grammar(
     sentence: Sentence
 ):
-    return check_grammar(sentence=sentence.text, language=sentence.language)
+    return check_text_grammar(text=sentence.text, language=sentence.language)

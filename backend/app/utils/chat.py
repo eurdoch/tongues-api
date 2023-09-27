@@ -1,5 +1,10 @@
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
+from langchain.prompts import (
+    PromptTemplate,
+    SystemPromptTemplate,
+    HumanPromptTemplate,
+    ChatPromptTemplate,
+)
 from langchain.chains import (
     ConversationChain,
     LLMChain,
@@ -19,28 +24,29 @@ def build_memory(history: str) -> ConversationBufferMemory:
                 memory.chat_memory.add_ai_message(text[1:])
     return memory
 
-def check_language(
-    sentence: str,
+def check_text_grammar(
+    text: str,
     language: str,
 ):
-    prompt = PromptTemplate.from_template("""Is the sentence "{sentence}" written in the 
-                                          language {language}? Reply with ONLY Yes or No""")
+    system_template = """You are a {language} teacher who checks the grammar of {language} text.
+    The user  will input text and you will check whether it contains correct grammar in {language}.
+    ONLY return Yes or No
+    """
+    human_template = "{text}"
+    system_prompt = SystemMessagePrompt.from_template(system_template)
+    human_prompt = HumanMessagePrompt.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([
+        system_prompt,
+        human_prompt
+    ])
     chain = LLMChain(
         llm=llm,
-        prompt=prompt,
+        prompt=chat_prompt,
     )
-    response = chain.run({
+    return chain.run({
         "language": language,
-        "sentence": sentence,
+        "text": text,
     })
-# def check_grammar(
-#     sentence: str,
-#     language: str,
-# ):
-#     system_message: str = """You are a {language} teacher who checks the grammar of sentences.
-#     Check the grammar of sentence below.  If it is correct, reply """
-#     prompt_template = PromptTemplate.from_template(input_variables=["language"] system_message)
-
 
 def get_chat_response_by_language(
     sentence: str,
