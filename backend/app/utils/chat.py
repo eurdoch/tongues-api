@@ -129,7 +129,7 @@ def get_chat_response_by_language(
     else:
         return {
             "is_valid": False,
-            "grammar_correct": False,
+            "grammar_correct": True,
             "history": history,
             "response": MISUNDERSTOOD_RESPONSE[language],
         }
