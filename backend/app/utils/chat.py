@@ -91,6 +91,7 @@ def get_chat_response_by_language(
     ONLY respond as if you are a real person having a conversation.
     """
 ):
+    return_value = {}
     if is_valid_text(text=text, language=language).replace(".", "") == "No":
         if is_valid_grammar(text=text, language=language).replace(".", "") == "No":
             memory = build_memory(history=history)
@@ -113,26 +114,27 @@ def get_chat_response_by_language(
             response = conversation_chain.predict(input=text)
             history = conversation_chain.memory.buffer_as_str
 
-            return {
+            return_value = {
                 "is_valid": True,
                 "grammar_correct": True,
                 "history": history,
                 "response": response
             }
         else:
-            return {
+            return_value = {
                 "is_valid": True,
                 "grammar_correct": False,
                 "history": history,
                 "response": get_grammar_explanation(text=text, language=language),
             }
     else:
-        return {
+        return_value = {
             "is_valid": False,
             "grammar_correct": True,
             "history": history,
             "response": MISUNDERSTOOD_RESPONSE[language],
         }
+    return return_value
 
 # TODO This is not being used, phase out
 def get_suggestions_by_language(
