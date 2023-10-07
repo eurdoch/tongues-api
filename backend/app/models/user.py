@@ -16,30 +16,37 @@ from pydantic import BaseModel
 #     primary: bool
 
 class UserDAO(Document):
-    email: str
-    subscribed: bool
-    firstName: str
-    lastName: str
+    revcat_id: str
     nativeLanguage: str
     studyLang: str
 
+# class User(Document):
+#     firstName: str
+#     lastName: str
+#     password: str
+#     email: str
+#     jwt_secret_key: str
+#     subscribed: bool
+#     nativeLanguage: str
+#     studyLang: str
 class User(Document):
-    firstName: str
-    lastName: str
-    password: str
-    email: str
-    jwt_secret_key: str
-    subscribed: bool
+    revcat_id: str
     nativeLanguage: str
     studyLang: str
+    jwt_secret_key: str
 
 class NativeLanguage(BaseModel):
     nativeLanguage: str
 
+# class SignupForm(BaseModel):
+#     email: str
+#     password: str
+#     firstName: str
+#     lastName: str
+#     nativeLanguage: str
+#     studyLang: str
+
 class SignupForm(BaseModel):
-    email: str
-    password: str
-    firstName: str
-    lastName: str
+    revcat_id: str
     nativeLanguage: str
     studyLang: str
