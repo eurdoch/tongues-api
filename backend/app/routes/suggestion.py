@@ -60,15 +60,15 @@ async def get_suggestions(
         output = response.choices[0].message.function_call.arguments
         return json.loads(output.replace('\n', ''))
     else:
-        prompt = f"""You are a {suggestionRequest.language} teacher who gives suggestions for sentences to 
-        use in conversation. Given the conversation
+        prompt = f"""You are a {suggestionRequest.language} teacher who gives suggestions for sentences to use in conversation. Give 3 suggestions for the next sentence of the following conversation:
         
-        Conversation:
         {suggestionRequest.history}
         Human:
-
-        generate 3 suggestions for how to complete the last statement from the human.
         """
+        print(f"""Conversation:
+        {suggestionRequest.history}
+        Human:
+        """)
         
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',

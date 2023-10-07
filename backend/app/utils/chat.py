@@ -13,13 +13,14 @@ from langchain.chat_models import ChatOpenAI
 from app.app import llm
 
 llmzerotemp = ChatOpenAI(temperature=0.0)
+llmhightemp = ChatOpenAI(temperature=1.2)
 llm4 = ChatOpenAI(model="gpt-4")
 
 MISUNDERSTOOD_RESPONSE = {
     "Dutch": "Het spijt me, ik begreep je niet.",
     "English": "Sorry, I didn't understand you.",
     "French": "Je suis désolé, je ne t'ai pas compris.",
-    "Spanish": "Lo siento, no te entendí.",
+    "Spanish (American)": "Lo siento, no te entendí.",
     "Italian": "Mi dispiace, non ti ho capito.",
     "German": "Es tut mir leid, ich habe dich nicht verstanden."
 }
@@ -92,8 +93,8 @@ def get_chat_response_by_language(
     """
 ):
     return_value = {}
-    if is_valid_text(text=text, language=language).replace(".", "") == "No":
-        if is_valid_grammar(text=text, language=language).replace(".", "") == "No":
+    if is_valid_text(text=text, language=language).replace(".", "") == "Yes":
+        if is_valid_grammar(text=text, language=language).replace(".", "") == "Yes":
             memory = build_memory(history=history)
             template = system_message + """
 
@@ -107,7 +108,7 @@ def get_chat_response_by_language(
             )
 
             conversation_chain = ConversationChain(
-                llm=llm,
+                llm=llmhightemp,
                 prompt=prompt_template.partial(language=language),
                 memory=memory
             )
