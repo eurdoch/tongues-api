@@ -6,11 +6,10 @@ from fastapi import (
     Header,
 )
 from secrets import token_urlsafe
+import json
 from app.auth import Auther
 from app.utils.auth import is_authorized
-import firebase_admin
 from firebase_admin import auth
-from firebase_admin import credentials
 
 router = APIRouter(
     prefix="/api/v0",
@@ -24,12 +23,12 @@ from app.utils.auth import is_authorized
 
 auther = Auther()
 
-@router.post(
+import os
+
+@router.get(
     "/verify"
 )
 async def verify_token(token: str = Header()):
-    cred = credentials.Certificate('./grawk-firebase-key.json')
-    firebase_app = firebase_admin.initialize_app(cred)
     decoded_token = auth.verify_id_token(token)
     uid = decoded_token['uid']
     print(uid)
