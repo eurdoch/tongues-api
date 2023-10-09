@@ -19,6 +19,7 @@ class UserDAO(Document):
     revcat_id: str
     nativeLanguage: str
     studyLang: str
+    firebase_user_id: str
 
 # class User(Document):
 #     firstName: str
@@ -33,7 +34,7 @@ class User(Document):
     revcat_id: str
     nativeLanguage: str
     studyLang: str
-    jwt_secret_key: str
+    firebase_user_id: str
 
 class NativeLanguage(BaseModel):
     nativeLanguage: str
@@ -47,6 +48,7 @@ class NativeLanguage(BaseModel):
 #     studyLang: str
 
 class SignupForm(BaseModel):
+    firebase_user_id: str
     revcat_id: str
     nativeLanguage: str
     studyLang: str

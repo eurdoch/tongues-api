@@ -26,26 +26,25 @@ auther = Auther()
 import os
 
 @router.get(
-    "/verify"
+    "/verify",
+    dependencies=[Depends(is_authorized)],
 )
-async def verify_token(token: str = Header()):
-    decoded_token = auth.verify_id_token(token)
-    uid = decoded_token['uid']
-    print(uid)
+async def verify_token():
+    pass
 
 @router.get(
-    "/users/{revcat_id}",
-    # dependencies=[Depends(is_authorized)],
+    "/users",
+    #dependencies=[Depends(is_authorized)],
 )
 async def get_user_by_id(
-    revcat_id: str,
-    # authorization: str = Header(),
+    authorization: str = Header(),
 ):
-    # user_id = auther.get_user_from_jwt(authorization)
-    user: User = await User.find_one(User.revcat_id == revcat_id)
+    token = authorization.split(' ')[1]
+    decoded_token = auth.verify_id_token(token)
+    user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
     if user is None:
         raise HTTPException(404)
-    return UserDAO.parse_obj(user)
+    return user
 
 # # TODO require assertion of userDAO against authorization claim
 # @router.put(
@@ -74,13 +73,12 @@ async def get_user_by_id(
 async def add_user(
     signup_form: SignupForm = Body(),
 ):
-    existing_user = await User.find_one(User.revcat_id == signup_form.revcat_id)
+    existing_user = await User.find_one(User.firebase_user_id == signup_form.firebase_user_id)
     if existing_user is not None:
         raise HTTPException(401)
-    jwt_secret_key = token_urlsafe(64)
     new_user = User(
         revcat_id=signup_form.revcat_id,
-        jwt_secret_key=jwt_secret_key,
+        firebase_user_id=signup_form.firebase_user_id,
         nativeLanguage=signup_form.nativeLanguage,
         studyLang=signup_form.studyLang,
     )
