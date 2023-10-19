@@ -62,13 +62,10 @@ async def get_suggestions(
     else:
         prompt = f"""You are a {suggestionRequest.language} teacher who gives suggestions for sentences to use in conversation. Give 3 suggestions for the next sentence of the following conversation:
         
+        Conversation:
         {suggestionRequest.history}
         Human:
         """
-        print(f"""Conversation:
-        {suggestionRequest.history}
-        Human:
-        """)
         
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
