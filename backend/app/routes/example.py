@@ -97,7 +97,7 @@ async def get_audio_by_id(
     await app.audio_bucket.download_to_stream(ObjectId(id), f) 
     f.seek(0)
     contents = f.read()
-    return Response(content=contents, media_type="audio/mp3")
+    return Response(content=contents, media_type="audio/webm")
 
 # TODO require admin key
 @router.delete("/audio/{id}")

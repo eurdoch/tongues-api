@@ -15,17 +15,36 @@ router = APIRouter(
     dependencies=[Depends(is_authorized)],
 )
 
+ISO_TO_VOICE_ID = {
+    'en_US': 'Joey',
+    'nl_NL': 'Ruben',
+    'es_US': 'Lupe',
+    'de_DE': 'Hans',
+    'fr_FR': 'Mathieu',
+    'it_IT': 'Giorgio',
+    'is_IS': 'Karl',
+    'pt_PT': 'Cristiano',
+    'pt_BR': 'Ricardo',
+    'ru_RU': 'Maxim',
+    'ja_JP': 'Takumi',
+    'arb': 'Zeina',
+    'sv_SE': 'Astrid',
+}
+
 class GenerateInfo(BaseModel):
     topic: str
     words: List[str]
 
 class Speech(BaseModel):
     sentence: str
-    voice_id: str
+    studyLang: str
 
 @router.post("/speech")
 async def generate_speech(speech: Speech): 
-    stream = generate_audio_stream(speech.voice_id, speech.sentence)
+    stream = generate_audio_stream(
+        ISO_TO_VOICE_ID[speech.studyLang.replace('-','_')], 
+        speech.sentence
+    )
     f = BytesIO()
     with closing(stream) as stream:
         try:

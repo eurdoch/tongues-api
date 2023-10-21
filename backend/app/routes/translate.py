@@ -72,35 +72,35 @@ async def translate_text(
     }
 
 ISO_TO_LANG = {
-    'en-US': 'American English',
-    'es-US': 'Spanish',
-    'nl-NL': 'Dutch',
-    'de-DE': 'German',
-    'fr-FR': 'French',
-    'it-IT': 'Italian',
-    'is-IS': 'Icelandic',
-    'pt-PT': 'Portuguese (European)',
-    'pt-BR': 'Portuguese (Brazilian)',
-    'ru-RU': 'Russian',
-    'ja-JP': 'Japanese',
+    'en_US': 'American English',
+    'es_US': 'Spanish',
+    'nl_NL': 'Dutch',
+    'de_DE': 'German',
+    'fr_FR': 'French',
+    'it_IT': 'Italian',
+    'is_IS': 'Icelandic',
+    'pt_PT': 'Portuguese (European)',
+    'pt_BR': 'Portuguese (Brazilian)',
+    'ru_RU': 'Russian',
+    'ja_JP': 'Japanese',
     'arb': 'Arabic',
-    'sv-SE': 'Swedish',
+    'sv_SE': 'Swedish',
 }
 
 ISO_TO_VOICE_ID = {
-    'en-US': 'Joey',
-    'nl-NL': 'Ruben',
-    'es-US': 'Lupe',
-    'de-DE': 'Hans',
-    'fr-FR': 'Mathieu',
-    'it-IT': 'Giorgio',
-    'is-IS': 'Karl',
-    'pt-PT': 'Cristiano',
-    'pt-BR': 'Ricardo',
-    'ru-RU': 'Maxim',
-    'ja-JP': 'Takumi',
+    'en_US': 'Joey',
+    'nl_NL': 'Ruben',
+    'es_US': 'Lupe',
+    'de_DE': 'Hans',
+    'fr_FR': 'Mathieu',
+    'it_IT': 'Giorgio',
+    'is_IS': 'Karl',
+    'pt_PT': 'Cristiano',
+    'pt_BR': 'Ricardo',
+    'ru_RU': 'Maxim',
+    'ja_JP': 'Takumi',
     'arb': 'Zeina',
-    'sv-SE': 'Astrid',
+    'sv_SE': 'Astrid',
 }
 
 # TODO change to GET request using query params
@@ -112,6 +112,8 @@ async def get_word(
     nativeLang: str = Query(),
     studyLang: str = Query(),
 ):
+    parsedStudyLang = studyLang.replace('-', '_')
+    parsedNativeLang = nativeLang.replace('-', '_')
     db_word = await Word.find_one(
        Word.word == word,
        Word.language == parsedStudyLang,
