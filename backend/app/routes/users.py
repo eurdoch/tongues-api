@@ -46,28 +46,23 @@ async def get_user_by_id(
         raise HTTPException(404)
     return user
 
-# # TODO require assertion of userDAO against authorization claim
-# @router.put(
-#     "/users",
-#     dependencies=[Depends(is_authorized)],
-# )
-# async def update_user(
-#     authorization: str = Header(),
-#     userDAO: UserDAO = Body(),
-# ):
-#     user_id = auther.get_user_from_jwt(authorization)
-#     userFromAuth: User = await User.get(user_id)
-#     if userFromAuth is None:
-#         raise HTTPException(404)
-#     user = await User.find_one(User.email == userDAO.email)
-#     if user.email != userFromAuth.email:
-#         raise HTTPException(404)
-#     fields = []
-#     for key in userDAO.__dict__:
-#         if key != "id" or key != "revision_id":
-#             await user.update({"$set": { key : userDAO.__dict__[key] }})
-#     newUser = await User.find_one(User.email == userDAO.email)
-#     return UserDAO.parse_obj(newUser)
+@router.put(
+     "/users",
+     dependencies=[Depends(is_authorized)],
+ )
+async def update_user(
+     authorization: str = Header(),
+     updatedUser: User = Body(),
+ ):
+    token = authorization.split(' ')[1]
+    decoded_token = auth.verify_id_token(token)
+    user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
+    if user is None or updatedUser.firebase_user_id != user.firebase_user_id:
+        raise HTTPException(401)
+    user.nativeLanguage = updatedUser.nativeLanguage
+    user.studyLang = updatedUser.studyLang
+    await user.save()
+    return user
 
 @router.post("/users")
 async def add_user(

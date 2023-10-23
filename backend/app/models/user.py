@@ -6,6 +6,10 @@ class UserDAO(Document):
     studyLang: str
     firebase_user_id: str
 
+class UserPatch(BaseModel):
+    nativeLang: str
+    studyLang: str
+
 class User(Document):
     nativeLanguage: str
     studyLang: str
