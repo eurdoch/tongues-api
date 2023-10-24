@@ -35,6 +35,9 @@ async def create_checkout_session(
                     'quantity': 1,
                 }
             ],
+            subscription_data={
+                "trial_period_days": 3,
+            },
             customer_email=customer_email,
             mode='subscription',
             success_url='https://langtools.link/success?success=true&session_id={CHECKOUT_SESSION_ID}',
