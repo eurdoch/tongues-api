@@ -3,6 +3,7 @@ from fastapi import (
     HTTPException,
     Body,
     Form,
+    Query,
 )
 from typing import Annotated
 from fastapi.responses import RedirectResponse
@@ -47,5 +48,15 @@ async def create_checkout_session(
 @router.post(
     '/create-portal-session'
 )
-async def create_portal_session():
-    pass
+async def create_portal_session(
+    session_id: str = Query(),
+):
+    checkout_session = stripe.checkout.Session.retrieve(session_id)
+
+    return_url = 'https://langtools.link/settings/subscription'
+
+    portal_session = stripe.billing_portal.Session.create(
+        customer=checkout_session.customer,
+        return_url=return_url,
+    )
+    return RedirectResponse(url=portal_session.url, status_code=303)
