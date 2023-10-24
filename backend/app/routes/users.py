@@ -53,7 +53,7 @@ async def get_user_by_id(
 async def update_user(
      authorization: str = Header(),
      updatedUser: User = Body(),
- ):
+):
     token = authorization.split(' ')[1]
     decoded_token = auth.verify_id_token(token)
     user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
@@ -61,6 +61,7 @@ async def update_user(
         raise HTTPException(401)
     user.nativeLanguage = updatedUser.nativeLanguage
     user.studyLang = updatedUser.studyLang
+    user.stripe_session_id = updatedUser.stripe_session_id
     await user.save()
     return user
 
@@ -79,6 +80,7 @@ async def add_user(
     inserted_user = await new_user.insert()
     return UserDAO.parse_obj(inserted_user)
 
+# TODO update this, needs to be delete function for user
 # @router.delete(
 #     "/users",
 #     dependencies=[Depends(is_authorized)],

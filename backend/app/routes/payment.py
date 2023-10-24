@@ -43,3 +43,9 @@ async def create_checkout_session(
     except Exception as e:
         print(e)
         return "Server error", 500
+
+@router.post(
+    '/create-portal-session'
+)
+async def create_portal_session():
+    pass
