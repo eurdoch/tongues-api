@@ -62,6 +62,7 @@ async def update_user(
     user.nativeLanguage = updatedUser.nativeLanguage
     user.studyLang = updatedUser.studyLang
     user.stripe_session_id = updatedUser.stripe_session_id
+    user.customer = updatedUser.customer
     await user.save()
     return user
 
@@ -73,12 +74,13 @@ async def add_user(
     if existing_user is not None:
         raise HTTPException(401)
     new_user = User(
+        email=signup_form.email,
         firebase_user_id=signup_form.firebase_user_id,
         nativeLanguage=signup_form.nativeLanguage,
         studyLang=signup_form.studyLang,
     )
     inserted_user = await new_user.insert()
-    return UserDAO.parse_obj(inserted_user)
+    return inserted_user
 
 # TODO update this, needs to be delete function for user
 # @router.delete(
