@@ -93,11 +93,11 @@ async def handle_webhook_update(
         )
         event_type = event['type']
         user: User = await User.find_one(User.email == event['data']['object']['customer_email'])
+
         if user is None:
             raise Exception(404)
-
         if event_type == 'checkout.session.completed':
-            user.subscription = 'trial'
+            user.subscription = 'active'
             await user.save()
         elif event_type == 'invoice.paid':
             user.subscription = 'active'
@@ -106,6 +106,5 @@ async def handle_webhook_update(
             user.subscription = 'inactive'
             await user.save()
     except Exception as e:
-        print("Exception")
         print(e)
         return e

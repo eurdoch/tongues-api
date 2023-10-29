@@ -17,7 +17,7 @@ class User(Document):
     firebase_user_id: str
     stripe_session_id: str = ""
     customer: str = ""
-    subscription: str = ""
+    subscription: str = "inactive"
 
 class NativeLanguage(BaseModel):
     nativeLanguage: str

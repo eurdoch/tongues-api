@@ -48,7 +48,7 @@ async def get_user_by_id(
 
 @router.put(
      "/users",
-     dependencies=[Depends(is_authorized)],
+     #dependencies=[Depends(is_authorized)],
  )
 async def update_user(
      authorization: str = Header(),
