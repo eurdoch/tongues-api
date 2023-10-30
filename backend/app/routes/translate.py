@@ -124,7 +124,7 @@ async def get_word(
             messages=[
                 {
                     "role": "user", 
-                    "content": "Explain the " + ISO_TO_LANG[parsedStudyLang] + " word " 
+                    "content": "Give a short explanation of the " + ISO_TO_LANG[parsedStudyLang] + " word " 
                         + "'" + word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
                         + " language, with the explanation written in the " + ISO_TO_LANG[parsedNativeLang]
                         + " language. Include the various translations of the word in the "
