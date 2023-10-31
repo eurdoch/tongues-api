@@ -27,6 +27,7 @@ from app.app import app
 from app.utils.auth import is_authorized
 from app.utils.generate import generate_audio_stream
 from app.utils.translate import translate
+from app.utils.models import get_chat_response
 
 ISO_TO_AWS_LANG = {
     'es-US': 'es',
@@ -112,22 +113,10 @@ async def get_word(
        Word.language == parsedStudyLang,
     )
     if db_word is None or parsedNativeLang not in db_word.explanation:
-        completion = openai.ChatCompletion.create(
-            model='gpt-3.5-turbo',
-            messages=[
-                {
-                    "role": "user", 
-                    "content": "Give a short explanation of the " + ISO_TO_LANG[parsedStudyLang] + " word " 
-                        + "'" + word + "' as it used in the " + ISO_TO_LANG[parsedStudyLang]
-                        + " language, with the explanation written in the " + ISO_TO_LANG[parsedNativeLang]
-                        + " language. Include the various translations of the word in the "
-                        + ISO_TO_LANG[parsedNativeLang] + " language."
-                }
-            ]
-        ) 
+        completion = get_chat_response(f"Explain the {ISO_TO_LANG[parsedStudyLang]} word '{word}' using the {ISO_TO_LANG[parsedNativeLang]} language.")
         if db_word is None:
             explanation = {}
-            explanation[parsedNativeLang] = completion.choices[0].message.content
+            explanation[parsedNativeLang] = completion
             # generate audio of word
             stream = generate_audio_stream(
                 voice_id=ISO_TO_VOICE_ID[parsedStudyLang],
@@ -155,7 +144,7 @@ async def get_word(
             return_word['audio_id'] = str(return_word['audio_id'])
             return return_word
         else:
-            db_word.explanation[parsedNativeLang] = completion.choices[0].message.content
+            db_word.explanation[parsedNativeLang] = completion
             await db_word.save()
             return_word = await Word.find_one(Word.word == db_word.word)
             return_word = return_word.__dict__
