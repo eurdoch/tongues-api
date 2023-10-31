@@ -9,10 +9,8 @@ from firebase_admin import credentials
 
 from app.config import CONFIG
 from app.models.user import User, UserDAO
-from app.models.example import Example
 from app.models.translate import Word
 from app.models.completion import Model
-from app.models.alphabet import Alphabet
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -26,10 +24,8 @@ async def lifespan(app: FastAPI):
         document_models=[
             User,
             UserDAO,
-            Example,
             Word,
             Model,
-            Alphabet,
         ]
     )
     yield
