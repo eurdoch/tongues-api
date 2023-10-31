@@ -28,13 +28,6 @@ from app.utils.auth import is_authorized
 from app.utils.generate import generate_audio_stream
 from app.utils.translate import translate
 
-session = Session(
-    region_name=os.getenv('AWS_REGION'),
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
-)
-translator = session.client("translate", region_name="us-east-1")
-
 ISO_TO_AWS_LANG = {
     'es-US': 'es',
     'en-US': 'en',
