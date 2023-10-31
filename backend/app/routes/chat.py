@@ -18,8 +18,6 @@ from langchain.chains import LLMChain
 from app.utils.auth import is_authorized
 from app.app import llm
 from app.utils.chat import get_chat_response_by_language
-from app.utils.chat import get_grammar_explanation
-from app.utils.chat import is_valid_grammar
 
 class Conversation(BaseModel):
     text: str
@@ -49,10 +47,10 @@ async def get_chat_response(
     )
 
 # For debug purposes
-@router.post(
-    "/grammar"
-)
-async def check_grammar(
-    sentence: Sentence
-):
-    return is_valid_grammar(text=sentence.text, language=sentence.language)
+#@router.post(
+#    "/grammar"
+#)
+#async def check_grammar(
+#    sentence: Sentence
+#):
+#    return is_valid_grammar(text=sentence.text, language=sentence.language)
