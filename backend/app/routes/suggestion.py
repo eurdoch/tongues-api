@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import openai
 
 from app.utils.auth import is_authorized
+from app.utils.models import get_chat_response
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -44,34 +45,8 @@ async def get_suggestions(
     suggestionRequest: SuggestionRequest,
 ):
     if suggestionRequest.history == None:
-        prompt = f"""You are a {suggestionRequest.language} translator who gives suggestions
-        for sentences to use in conversation. The user will input a language and you will
-        return three simple sentences for initiating a conversation 
-        in that language.
-        ONLY return a json string with the key suggestions and the value as list of the suggestions.
-        """
-        
-        response = openai.ChatCompletion.create(
-            model='gpt-3.5-turbo',
-            messages=[{"role": "user", "content": prompt}],
-            functions=suggestion_functions,
-            function_call="auto",
-        )
-        output = response.choices[0].message.function_call.arguments
-        return json.loads(output.replace('\n', ''))
+        response = get_chat_response(f"Generate 3 suggestions for starting a conversation in {suggestionRequest.language}.  ONLY return the suggestions as a JSON object of the form {{ suggestions: ... }}")
+        return json.loads(response.replace('\n', ''))
     else:
-        prompt = f"""You are a {suggestionRequest.language} teacher who gives suggestions for sentences to use in conversation. Give 3 suggestions for the next sentence of the following conversation:
-        
-        Conversation:
-        {suggestionRequest.history}
-        Human:
-        """
-        
-        response = openai.ChatCompletion.create(
-            model='gpt-3.5-turbo',
-            messages=[{"role": "user", "content": prompt}],
-            functions=suggestion_functions,
-            function_call="auto",
-        )
-        output = response.choices[0].message.function_call.arguments
-        return json.loads(output.replace('\n', ''))
+        response = get_chat_response(f"Generate 3 suggestions for continuing the following conversation in {suggestionRequest.language}.  ONLY return the suggestions as a JSON object of the form {{ suggestions: ... }}. Conversation: {suggestionRequest.history}")
+        return json.loads(response.replace('\n', ''))
