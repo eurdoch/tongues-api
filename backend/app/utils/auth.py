@@ -11,6 +11,6 @@ class UserSubscriptionStatus(BaseModel):
 async def is_authorized(authorization: Annotated[str, Header()]):
     token = authorization.split(' ')[1]
     decoded_token = auth.verify_id_token(token)
-    user = await User.find_one(User.firebase_user_id == decoded_token['uid']).project(UserSubscriptionStatus)
-    if user.subscription != 'active':
-        raise HTTPException(401)
+    #user = await User.find_one(User.firebase_user_id == decoded_token['uid']).project(UserSubscriptionStatus)
+    #if user.subscription != 'active':
+    #    raise HTTPException(401)

@@ -74,10 +74,9 @@ async def add_user(
     if existing_user is not None:
         raise HTTPException(401)
     new_user = User(
-        email=signup_form.email,
         firebase_user_id=signup_form.firebase_user_id,
         nativeLanguage=signup_form.nativeLanguage,
-        studyLang=signup_form.studyLang,
+        studyLanguage=signup_form.studyLanguage,
     )
     inserted_user = await new_user.insert()
     return inserted_user

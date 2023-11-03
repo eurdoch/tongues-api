@@ -36,14 +36,14 @@ class GenerateInfo(BaseModel):
     words: List[str]
 
 class Speech(BaseModel):
-    sentence: str
-    studyLang: str
+    text: str
+    language: str
 
 @router.post("/speech")
 async def generate_speech(speech: Speech): 
     stream = generate_audio_stream(
-        ISO_TO_VOICE_ID[speech.studyLang.replace('-','_')], 
-        speech.sentence
+        ISO_TO_VOICE_ID[speech.language.replace('-','_')], 
+        speech.text
     )
     f = BytesIO()
     with closing(stream) as stream:
