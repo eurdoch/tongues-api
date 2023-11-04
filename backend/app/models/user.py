@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class UserDAO(Document):
     nativeLanguage: str
-    studyLang: str
+    studyLanguage: str
     firebase_user_id: str
 
 class UserPatch(BaseModel):

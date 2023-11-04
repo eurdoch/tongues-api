@@ -44,7 +44,7 @@ async def get_user_by_id(
     user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
     if user is None:
         raise HTTPException(404)
-    return user
+    return UserDAO.parse_obj(user)
 
 @router.put(
      "/users",
@@ -79,7 +79,7 @@ async def add_user(
         studyLanguage=signup_form.studyLanguage,
     )
     inserted_user = await new_user.insert()
-    return inserted_user
+    return UserDAO.parse_obj(inserted_user)
 
 # TODO update this, needs to be delete function for user
 # @router.delete(
