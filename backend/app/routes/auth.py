@@ -45,3 +45,11 @@ async def login(login: Login = Body()):
         user_id=str(user.id),
         token_type="bearer"
     )
+
+@router.get(
+    "/ping",    
+)
+async def ping():
+    return {
+        "message": "pong",
+    }

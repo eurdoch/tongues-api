@@ -34,7 +34,6 @@ async def verify_token():
 
 @router.get(
     "/users",
-    #dependencies=[Depends(is_authorized)],
 )
 async def get_user_by_id(
     authorization: str = Header(),
@@ -44,12 +43,11 @@ async def get_user_by_id(
     user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
     if user is None:
         raise HTTPException(404)
-    return user
+    return UserDAO.parse_obj(user)
 
 @router.put(
      "/users",
-     #dependencies=[Depends(is_authorized)],
- )
+)
 async def update_user(
      authorization: str = Header(),
      updatedUser: User = Body(),
@@ -60,9 +58,7 @@ async def update_user(
     if user is None or updatedUser.firebase_user_id != user.firebase_user_id:
         raise HTTPException(401)
     user.nativeLanguage = updatedUser.nativeLanguage
-    user.studyLang = updatedUser.studyLang
-    user.stripe_session_id = updatedUser.stripe_session_id
-    user.customer = updatedUser.customer
+    user.studyLanguage = updatedUser.studyLanguage
     await user.save()
     return user
 
@@ -74,13 +70,12 @@ async def add_user(
     if existing_user is not None:
         raise HTTPException(401)
     new_user = User(
-        email=signup_form.email,
         firebase_user_id=signup_form.firebase_user_id,
         nativeLanguage=signup_form.nativeLanguage,
-        studyLang=signup_form.studyLang,
+        studyLanguage=signup_form.studyLanguage,
     )
     inserted_user = await new_user.insert()
-    return inserted_user
+    return UserDAO.parse_obj(inserted_user)
 
 # TODO update this, needs to be delete function for user
 # @router.delete(
