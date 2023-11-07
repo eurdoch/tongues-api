@@ -34,7 +34,6 @@ async def verify_token():
 
 @router.get(
     "/users",
-    #dependencies=[Depends(is_authorized)],
 )
 async def get_user_by_id(
     authorization: str = Header(),
@@ -48,8 +47,7 @@ async def get_user_by_id(
 
 @router.put(
      "/users",
-     #dependencies=[Depends(is_authorized)],
- )
+)
 async def update_user(
      authorization: str = Header(),
      updatedUser: User = Body(),
@@ -60,9 +58,7 @@ async def update_user(
     if user is None or updatedUser.firebase_user_id != user.firebase_user_id:
         raise HTTPException(401)
     user.nativeLanguage = updatedUser.nativeLanguage
-    user.studyLang = updatedUser.studyLang
-    user.stripe_session_id = updatedUser.stripe_session_id
-    user.customer = updatedUser.customer
+    user.studyLanguage = updatedUser.studyLanguage
     await user.save()
     return user
 
