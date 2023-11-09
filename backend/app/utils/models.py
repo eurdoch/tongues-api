@@ -12,10 +12,10 @@ session = Session(
 )
 bedrock = session.client('bedrock-runtime')
 
-def get_chat_response(prompt):
+def get_chat_response(prompt, max_tokens=3000):
     body = json.dumps({
         "prompt": "Human:" + prompt + "\n\nAssistant:",
-        "max_tokens_to_sample": 300,
+        "max_tokens_to_sample": max_tokens,
         "temperature": 1.0,
         "top_p": 0.9,
     })
