@@ -3,6 +3,7 @@ from io import BytesIO
 import openai
 import os
 from boto3 import Session
+import json
  
 from dotenv import load_dotenv
 load_dotenv()
@@ -113,7 +114,7 @@ async def get_word(
        Word.language == parsedStudyLang,
     )
     if db_word is None or parsedNativeLang not in db_word.explanation:
-        completion = get_chat_response(f"Explain the {ISO_TO_LANG[parsedStudyLang]} word '{word}' using the {ISO_TO_LANG[parsedNativeLang]} language.")
+        completion = get_chat_response(f"Give a short explanation of the {ISO_TO_LANG[parsedStudyLang]} word '{word}' using the {ISO_TO_LANG[parsedNativeLang]} language.")
         if db_word is None:
             explanation = {}
             explanation[parsedNativeLang] = completion
@@ -157,3 +158,14 @@ async def get_word(
         return_word['explanation'] = return_word['explanation'][parsedNativeLang]
         return_word['audio_id'] = str(return_word['audio_id'])
         return return_word
+
+@router.get(
+    "/conjugations"
+)
+async def get_conjugations(
+    word: str = Query(),
+    language: str = Query(),
+):
+    # TODO starting with just call to Claude
+    response = get_chat_response(f"Generate all tenses and conjugations of the {language} verb '{word}', including the infinitive and participle cases.  ONLY return a JSON object.")
+    return json.loads(response.replace('\n', ''))
