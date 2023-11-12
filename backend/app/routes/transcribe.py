@@ -12,6 +12,9 @@ import os
 import requests
 
 from app.utils.auth import is_authorized
+from app.utils.chat import is_valid_grammar
+from app.utils.chat import explain_invalid_grammar
+from app.routes.translate import LANG_TO_ISO
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -34,7 +37,7 @@ async def get_audio_transcription(
     }
     data = {
         'model': model,
-        'language': language,
+        'language': LANG_TO_ISO[language][:2],
     }
     headers = {
         "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
@@ -46,7 +49,14 @@ async def get_audio_transcription(
         headers=headers
     )
     transcription = r.json()['text']
-    transcription = transcription.strip()
-    return {
-        "text": transcription,
-    }
+    if (is_valid_grammar(text=transcription, language=language)):
+        return {
+            "is_grammar_valid": True,
+            "text": transcription.strip(),
+        }
+    else:
+        grammar_explanation = explain_invalid_grammar(text=transcription, language=language)
+        return {
+            "is_grammar_valid": False,
+            "text": grammar_explanation,
+        }

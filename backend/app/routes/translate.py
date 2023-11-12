@@ -66,9 +66,13 @@ async def translate_text(
         "translation": response
     }
 
+def reverse_dict(original_dict):
+    switched_dict = {value: key for key, value in original_dict.items()}
+    return switched_dict
+
 ISO_TO_LANG = {
-    'en_US': 'American English',
-    'es_US': 'Spanish',
+    'en_US': 'English (American)',
+    'es_US': 'Spanish (American)',
     'nl_NL': 'Dutch',
     'de_DE': 'German',
     'fr_FR': 'French',
@@ -81,6 +85,8 @@ ISO_TO_LANG = {
     'arb': 'Arabic',
     'sv_SE': 'Swedish',
 }
+
+LANG_TO_ISO = reverse_dict(ISO_TO_LANG)
 
 ISO_TO_VOICE_ID = {
     'en_US': 'Joey',
