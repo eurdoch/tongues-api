@@ -22,3 +22,19 @@ def get_chat_response_by_language(
         "history": newHistory,
         "response": response
     }
+
+def is_valid_grammar(
+    text: str,
+    language: str,
+) -> bool:
+    response = get_chat_response(f"Does the text '{text}' contain valid grammar in the {language} language? ONLY repsond with Yes or No")
+    if "No" in response:
+        return False
+    if "Yes" in response:
+        return True
+
+def explain_invalid_grammar(
+    text: str,
+    language: str,
+) -> str:
+    return get_chat_response(f"Explain what is wrong with the grammar in the {language} text '{text}'")
