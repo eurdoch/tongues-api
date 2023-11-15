@@ -27,7 +27,7 @@ from app.models.translate import (
 from app.app import app
 from app.utils.auth import is_authorized
 from app.utils.generate import generate_audio_stream
-from app.utils.translate import translate
+from app.utils.translate import translate, translate_word
 from app.utils.models import get_chat_response
 
 ISO_TO_AWS_LANG = {
@@ -104,7 +104,6 @@ ISO_TO_VOICE_ID = {
     'sv_SE': 'Astrid',
 }
 
-# TODO change to GET request using query params
 @router.get(
     "/word"
 )
@@ -119,11 +118,15 @@ async def get_word(
        Word.word == word,
        Word.language == parsedStudyLang,
     )
-    if db_word is None or parsedNativeLang not in db_word.explanation:
-        completion = get_chat_response(f"Give a short explanation of the {ISO_TO_LANG[parsedStudyLang]} word '{word}' using the {ISO_TO_LANG[parsedNativeLang]} language.")
+    if db_word is None or parsedNativeLang not in db_word.translations:
+        translations = translate_word(
+            source_language=ISO_TO_LANG[parsedStudyLang],
+            target_language=ISO_TO_LANG[parsedNativeLang],
+            word=word,
+        )
         if db_word is None:
-            explanation = {}
-            explanation[parsedNativeLang] = completion
+            translations_dict = {}
+            translations_dict[parsedNativeLang] = translations
             # generate audio of word
             stream = generate_audio_stream(
                 voice_id=ISO_TO_VOICE_ID[parsedStudyLang],
@@ -141,27 +144,27 @@ async def get_word(
             new_word = Word(
                 word=word,
                 language=parsedStudyLang,
-                explanation=explanation,
+                translations=translations_dict,
                 audio_id=audio_id,
             )
             await new_word.save()
             return_word = await Word.find_one(Word.word == new_word.word)
             return_word = return_word.__dict__
-            return_word['explanation'] = return_word['explanation'][parsedNativeLang]
+            return_word['translations'] = return_word['translations'][parsedNativeLang]
             return_word['audio_id'] = str(return_word['audio_id'])
             return return_word
         else:
-            db_word.explanation[parsedNativeLang] = completion
+            db_word.translations[parsedNativeLang] = translations
             await db_word.save()
             return_word = await Word.find_one(Word.word == db_word.word)
             return_word = return_word.__dict__
-            return_word['explanation'] = return_word['explanation'][parsedNativeLang]
+            return_word['translations'] = return_word['translations'][parsedNativeLang]
             return_word['audio_id'] = str(return_word['audio_id'])
             return return_word
     else:
         return_word = await Word.find_one(Word.word == db_word.word)
         return_word = return_word.__dict__
-        return_word['explanation'] = return_word['explanation'][parsedNativeLang]
+        return_word['translations'] = return_word['translations'][parsedNativeLang]
         return_word['audio_id'] = str(return_word['audio_id'])
         return return_word
 

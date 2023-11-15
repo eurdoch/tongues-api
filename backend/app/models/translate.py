@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, List
 from beanie import Document, PydanticObjectId
 
 class TranslationRequest(BaseModel):
@@ -20,19 +20,4 @@ class Word(Document):
     audio_id: PydanticObjectId
     word: str
     language: str
-    explanation: Dict[str, str]
-
-class WordShortView(BaseModel):
-    audio_id: PydanticObjectId
-    word: str
-    language: str
-    explanation: str
-
-    class Settings:
-        projection = {
-            "audio_id": 1,
-            "word": 1,
-            "language": 1,
-            # TODO generalize using init argument
-            "explanation": "$explanation.es_US",
-        }
+    translations: Dict[str, List[str]]
