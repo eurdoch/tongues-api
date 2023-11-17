@@ -16,6 +16,7 @@ router = APIRouter(
 )
 
 ISO_TO_VOICE_ID = {
+    'es_ES': 'Enrique',
     'en_US': 'Joey',
     'nl_NL': 'Ruben',
     'es_US': 'Lupe',
