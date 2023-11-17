@@ -30,6 +30,7 @@ ISO_TO_VOICE_ID = {
     'ja_JP': 'Takumi',
     'arb': 'Zeina',
     'sv_SE': 'Astrid',
+    'nb_NO': 'Liv',
 }
 
 class GenerateInfo(BaseModel):

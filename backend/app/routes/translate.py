@@ -71,6 +71,7 @@ def reverse_dict(original_dict):
     return switched_dict
 
 ISO_TO_LANG = {
+    'nb_NO': 'Norwegian',
     'es_ES': 'Spanish (European)',
     'en_US': 'English (American)',
     'es_US': 'Spanish (American)',
@@ -90,6 +91,7 @@ ISO_TO_LANG = {
 LANG_TO_ISO = reverse_dict(ISO_TO_LANG)
 
 ISO_TO_VOICE_ID = {
+    'nb_NO': 'Liv',
     'es_ES': 'Enrique',
     'en_US': 'Joey',
     'nl_NL': 'Ruben',
