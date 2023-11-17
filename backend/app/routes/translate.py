@@ -29,7 +29,7 @@ from app.utils.auth import is_authorized
 from app.utils.generate import generate_audio_stream
 from app.utils.translate import translate, translate_word
 from app.utils.models import get_chat_response
-from app.utils.language import ISO_TO_LANG, LANG_TO_ISO
+from app.utils.language import ISO_TO_LANG, LANG_TO_ISO, ISO_TO_VOICE_ID
 
 router = APIRouter(
     prefix="/api/v0",
