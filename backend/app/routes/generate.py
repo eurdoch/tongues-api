@@ -9,29 +9,12 @@ from io import BytesIO
 from contextlib import closing
 from app.utils.generate import generate_audio_stream
 from app.utils.auth import is_authorized
+from app.utils.language import ISO_TO_VOICE_ID
 
 router = APIRouter(
     prefix="/api/v0",
     dependencies=[Depends(is_authorized)],
 )
-
-ISO_TO_VOICE_ID = {
-    'es_ES': 'Enrique',
-    'en_US': 'Joey',
-    'nl_NL': 'Ruben',
-    'es_US': 'Lupe',
-    'de_DE': 'Hans',
-    'fr_FR': 'Mathieu',
-    'it_IT': 'Giorgio',
-    'is_IS': 'Karl',
-    'pt_PT': 'Cristiano',
-    'pt_BR': 'Ricardo',
-    'ru_RU': 'Maxim',
-    'ja_JP': 'Takumi',
-    'arb': 'Zeina',
-    'sv_SE': 'Astrid',
-    'nb_NO': 'Liv',
-}
 
 class GenerateInfo(BaseModel):
     topic: str

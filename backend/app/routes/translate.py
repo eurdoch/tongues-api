@@ -29,22 +29,7 @@ from app.utils.auth import is_authorized
 from app.utils.generate import generate_audio_stream
 from app.utils.translate import translate, translate_word
 from app.utils.models import get_chat_response
-
-ISO_TO_AWS_LANG = {
-    'es-US': 'es',
-    'en-US': 'en',
-    'nl-NL': 'nl',
-    'fr-FR': 'fr',
-    'de-DE': 'de',
-    'it-IT': 'it',
-    'is-IS': 'is',
-    'pt-PT': 'pt-PT',
-    'pt-BR': 'pt',
-    'ru-RU': 'ru',
-    'ja-JP': 'jp',
-    'arb': 'ar',
-    'sv-SE': 'sv',
-}
+from app.utils.language import ISO_TO_LANG, LANG_TO_ISO
 
 router = APIRouter(
     prefix="/api/v0",
@@ -69,44 +54,6 @@ async def translate_text(
 def reverse_dict(original_dict):
     switched_dict = {value: key for key, value in original_dict.items()}
     return switched_dict
-
-ISO_TO_LANG = {
-    'nb_NO': 'Norwegian',
-    'es_ES': 'Spanish (European)',
-    'en_US': 'English (American)',
-    'es_US': 'Spanish (American)',
-    'nl_NL': 'Dutch',
-    'de_DE': 'German',
-    'fr_FR': 'French',
-    'it_IT': 'Italian',
-    'is_IS': 'Icelandic',
-    'pt_PT': 'Portuguese (European)',
-    'pt_BR': 'Portuguese (Brazilian)',
-    'ru_RU': 'Russian',
-    'ja_JP': 'Japanese',
-    'arb': 'Arabic',
-    'sv_SE': 'Swedish',
-}
-
-LANG_TO_ISO = reverse_dict(ISO_TO_LANG)
-
-ISO_TO_VOICE_ID = {
-    'nb_NO': 'Liv',
-    'es_ES': 'Enrique',
-    'en_US': 'Joey',
-    'nl_NL': 'Ruben',
-    'es_US': 'Lupe',
-    'de_DE': 'Hans',
-    'fr_FR': 'Mathieu',
-    'it_IT': 'Giorgio',
-    'is_IS': 'Karl',
-    'pt_PT': 'Cristiano',
-    'pt_BR': 'Ricardo',
-    'ru_RU': 'Maxim',
-    'ja_JP': 'Takumi',
-    'arb': 'Zeina',
-    'sv_SE': 'Astrid',
-}
 
 @router.get(
     "/word"
