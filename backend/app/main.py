@@ -8,8 +8,7 @@ from app.routes.completion import router as CompletionRouter
 from app.routes.model import router as ModelRouter
 from app.routes.suggestion import router as SuggestionRouter
 from app.routes.chat import router as ChatRouter
-from app.routes.example import router as ExampleRouter
-#from app.routes.payment import router as PaymentRouter
+from app.routes.audio import router as AudioRouter
 from starlette.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -29,5 +28,4 @@ app.include_router(CompletionRouter)
 app.include_router(ModelRouter)
 app.include_router(SuggestionRouter)
 app.include_router(ChatRouter)
-app.include_router(ExampleRouter)
-#app.include_router(PaymentRouter)
+app.include_router(AudioRouter)
