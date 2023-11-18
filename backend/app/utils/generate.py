@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+from app.utils.language import VoiceId
+
 session = Session(
     region_name=os.getenv('AWS_REGION'),
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
@@ -12,13 +14,13 @@ session = Session(
 )
 polly = session.client("polly", region_name="us-east-1")
 
-def generate_audio_stream(voice_id: str, text: str):
+def generate_audio_stream(voice_id: VoiceId, text: str):
     # TODO Add exception handling to this
     response = polly.synthesize_speech(
-        Engine='neural',
+        Engine=voice_id.engine,
         Text=text,
         OutputFormat="mp3",
-        VoiceId=voice_id
+        VoiceId=voice_id.name,
     )
     if "AudioStream" in response:
         return response["AudioStream"]
