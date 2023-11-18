@@ -7,6 +7,8 @@ ISO_TO_LANG = {
     'en_GB': 'English (British)',
     #'en_IE': 'English (Ireland)', *no standard voice
     'en_AU': 'English (Australian)',
+    'ca_ES': 'Catalan',
+    'cmn_CN': 'Chinese (Mandarin)',
     'es_US': 'Spanish (American)',
     'es_MX': 'Spanish (Mexican)',
     'es_ES': 'Spanish (European)',
@@ -34,6 +36,7 @@ ISO_TO_LANG = {
 LANG_TO_ISO = reverse_dict(ISO_TO_LANG)
 
 ISO_TO_VOICE_ID = {
+    'cmn_CN': 'Zhiyu',
     'tr_TR': 'Filiz',
     'cy_GB': 'Gwyneth',
     'es_MX': 'Mia',
@@ -43,7 +46,9 @@ ISO_TO_VOICE_ID = {
     'en_AU': 'Russell',
     'en_GB': 'Brian',
     'da_DK': 'Mads',
-    'es_ES': 'Enrique',
+    #'es_ES': 'Enrique',
+    'es_ES': 'Sergio',
+    'ca_ES': 'Arlet',
     'en_US': 'Joey',
     'nl_NL': 'Ruben',
     'es_US': 'Lupe',

@@ -15,6 +15,7 @@ polly = session.client("polly", region_name="us-east-1")
 def generate_audio_stream(voice_id: str, text: str):
     # TODO Add exception handling to this
     response = polly.synthesize_speech(
+        Engine='neural',
         Text=text,
         OutputFormat="mp3",
         VoiceId=voice_id
