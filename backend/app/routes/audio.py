@@ -1,21 +1,13 @@
-from app.models.example import Example
-from app.models.user import User
-from app.auth import Auther
 from app.app import app
 from typing import Annotated
-from pydantic import BaseModel
-from beanie import PydanticObjectId
 
 from io import BytesIO
 from bson import ObjectId
 
 from fastapi import (
     APIRouter, 
-    HTTPException,
-    Header,
     File,
     Response,
-    Query,
     Depends,
 )
 

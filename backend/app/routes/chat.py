@@ -1,22 +1,10 @@
 from fastapi import (
     APIRouter,
-    File,
-    Header,
-    HTTPException,
     Depends,
 )
 from pydantic import BaseModel
 
-from langchain.prompts import (
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-    ChatPromptTemplate,
-    PromptTemplate,
-)
-from langchain.chains import LLMChain
-
 from app.utils.auth import is_authorized
-from app.app import llm
 from app.utils.chat import get_chat_response_by_language
 
 class Conversation(BaseModel):

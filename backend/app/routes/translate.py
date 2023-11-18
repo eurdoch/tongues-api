@@ -1,21 +1,9 @@
 from contextlib import closing
 from io import BytesIO
-import openai
-import os
-from boto3 import Session
 import json
  
-from dotenv import load_dotenv
-load_dotenv()
-
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
 from fastapi import (
     APIRouter,
-    Header,
-    HTTPException,
-    Body,
-    Path,
     Depends,
     Query,
 )

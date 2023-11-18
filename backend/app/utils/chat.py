@@ -1,5 +1,6 @@
 from app.utils.models import get_chat_response
 
+# TODO generate response for all languages
 MISUNDERSTOOD_RESPONSE = {
     "Dutch": "Het spijt me, ik begreep je niet.",
     "English": "Sorry, I didn't understand you.",

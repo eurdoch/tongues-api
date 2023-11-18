@@ -1,6 +1,7 @@
 import os
 import json
 
+# TODO load environment in beginning of app, currently loads in ultiple places, unnecessary
 from dotenv import load_dotenv
 load_dotenv()
 

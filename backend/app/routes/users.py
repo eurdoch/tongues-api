@@ -5,9 +5,6 @@ from fastapi import (
     HTTPException,
     Header,
 )
-from secrets import token_urlsafe
-import json
-from app.auth import Auther
 from app.utils.auth import is_authorized
 from firebase_admin import auth
 
@@ -15,15 +12,8 @@ router = APIRouter(
     prefix="/api/v0",
 )
 
-# TODO This is messy, all authorization should be handled with a single class/function
-from app.core.auther import get_auther
-from app.auth import Auther
 from app.models.user import User, SignupForm, UserDAO
 from app.utils.auth import is_authorized
-
-auther = Auther()
-
-import os
 
 @router.get(
     "/verify",

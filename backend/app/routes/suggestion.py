@@ -5,8 +5,6 @@ from fastapi import (
 import json
 from pydantic import BaseModel
 
-import openai
-
 from app.utils.auth import is_authorized
 from app.utils.models import get_chat_response
 
@@ -21,22 +19,6 @@ router = APIRouter(
 class SuggestionRequest(BaseModel):
     language: str
     history: str = None
-
-suggestion_functions = [
-    {
-        'name': 'extract_suggestions',
-        'parameters': {
-            'type': 'object',
-            'properties': {
-                'suggestions': {
-                    'type': 'array',
-                    'items': {
-                        'type': 'string'}
-                    }
-            }
-        }
-    }
-]
 
 @router.post(
     "/suggestions"

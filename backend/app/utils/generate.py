@@ -1,5 +1,4 @@
 from boto3 import Session
-import openai
 import os
 
 from dotenv import load_dotenv
