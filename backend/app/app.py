@@ -14,23 +14,23 @@ from app.models.translate import Word
 from dotenv import load_dotenv
 load_dotenv()
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-    # app.db = AsyncIOMotorClient(CONFIG.mongo_uri).grawk
-    # app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
-    # await init_beanie(
-    #     app.db, 
-    #     document_models=[
-    #         User,
-    #         UserDAO,
-    #         Word,
-    #     ]
-    # )
-    # yield
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.db = AsyncIOMotorClient(CONFIG.mongo_uri).grawk
+    app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
+    await init_beanie(
+        app.db, 
+        document_models=[
+            User,
+            UserDAO,
+            Word,
+        ]
+    )
+    yield
 
-app = FastAPI()
-#     lifespan=lifespan,
-# )
+app = FastAPI(
+    lifespan=lifespan,
+)
 
 cred = credentials.Certificate('./firebase-key.json')
 firebase_admin.initialize_app(cred)
