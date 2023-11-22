@@ -13,6 +13,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
       - ./dist:/usr/local/data/dist
   backend:
+    ports:
+      - 27017:27017
     build:
       context: ./backend
       dockerfile: Dockerfile 
