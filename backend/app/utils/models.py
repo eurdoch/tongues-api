@@ -13,12 +13,25 @@ session = Session(
 )
 bedrock = session.client('bedrock-runtime')
 
-def get_chat_response(prompt, max_tokens=3000):
+async def get_streaming_chat_response(prompt, max_tokens=3000):
     body = json.dumps({
         "prompt": "Human:" + prompt + "\n\nAssistant:",
         "max_tokens_to_sample": max_tokens,
-        "temperature": 1.0,
-        "top_p": 0.9,
+    })
+    response = bedrock.invoke_model_with_response_stream(
+        body=body,
+        modelId=os.getenv('CLAUDE_INSTANT_MODEL'),
+        contentType='application/json',
+    )
+    for event in response['body']:
+        yield "data: " + event['chunk']['bytes'].decode() + "\n\n"
+
+def get_chat_response(prompt, max_tokens=3000, temperature=1.0, top_p=0.9):
+    body = json.dumps({
+        "prompt": "Human:" + prompt + "\n\nAssistant:",
+        "max_tokens_to_sample": max_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
     })
     response = bedrock.invoke_model(
         body=body,

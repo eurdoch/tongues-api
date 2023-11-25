@@ -10,12 +10,18 @@ MISUNDERSTOOD_RESPONSE = {
     "German": "Es tut mir leid, ich habe dich nicht verstanden."
 }
 
+def get_answer(question: str):
+    response = get_chat_response(prompt=question, temperature=0.2, top_p=0.1)
+    return {
+        "answer": response
+    }
+
 def get_chat_response_by_language(
     text: str,
     language: str,
     history: str = None,
 ):
-    response = get_chat_response(f"Generate a short response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
+    response = get_chat_response(prompt=f"Generate a short response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
     newHistory = f"Human:{text}\nAI:{response}" if history is None else history + f"\nHuman:{text}\nAI:{response}"
     return {
         "is_valid": True,

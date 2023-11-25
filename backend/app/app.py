@@ -14,9 +14,12 @@ from app.models.translate import Word
 from dotenv import load_dotenv
 load_dotenv()
 
+import certifi
+ca = certifi.where()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.db = AsyncIOMotorClient(CONFIG.mongo_uri).grawk
+    app.db = AsyncIOMotorClient(CONFIG.mongo_uri, tlsCAFile=ca).grawk
     app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
     await init_beanie(
         app.db, 

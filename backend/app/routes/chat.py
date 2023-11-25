@@ -1,11 +1,14 @@
 from fastapi import (
     APIRouter,
     Depends,
+    Query,
 )
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.utils.auth import is_authorized
-from app.utils.chat import get_chat_response_by_language
+from app.utils.chat import get_chat_response_by_language, get_answer
+from app.utils.models import get_streaming_chat_response
 
 class Conversation(BaseModel):
     text: str
@@ -34,11 +37,8 @@ async def get_chat_response(
         history=conversation.history
     )
 
-# For debug purposes
-#@router.post(
-#    "/grammar"
-#)
-#async def check_grammar(
-#    sentence: Sentence
-#):
-#    return is_valid_grammar(text=sentence.text, language=sentence.language)
+@router.get(
+    "/question"
+)
+async def ask_question(prompt: str = Query()):
+    return StreamingResponse(get_streaming_chat_response(prompt), media_type='text/event-stream')
