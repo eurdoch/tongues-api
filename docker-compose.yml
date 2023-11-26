@@ -1,20 +1,20 @@
 version: '3'
 
 services:
-  #nginx:
-  #  image: nginx
-  #  ports:
-  #    - 80:80
-  #    - 443:443
-  #  extra_hosts:
-  #    - "host.docker.internal:host-gateway"
-  #  volumes:
-  #    - ./conf.d:/etc/nginx/conf.d - /etc/letsencrypt:/etc/letsencrypt
-  #    - ./dist:/usr/local/data/dist
+  nginx:
+   image: nginx
+   ports:
+     - 80:80
+    #  - 443:443
+   extra_hosts:
+     - "host.docker.internal:host-gateway"
+   volumes:
+     - ./conf.d:/etc/nginx/conf.d - /etc/letsencrypt:/etc/letsencrypt
+    #  - ./dist:/usr/local/data/dist
   backend:
     ports:
       - 8000:8000
-        #    - 27017:27017
+      - 27017:27017
     build:
       context: ./backend
       dockerfile: Dockerfile 
