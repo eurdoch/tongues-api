@@ -118,6 +118,15 @@ async def get_explanation(
     response = get_chat_response(f"Explain the {studyLang} text {text} using {nativeLang}.")
     return { "text": response }
 
+@router.get("/analysis")
+async def get_analysis(
+    word: str = Query(),
+    nativeLang: str = Query(),
+    studyLang: str = Query(),
+):
+    response = get_chat_response(f"Give a short explanation using the {nativeLang} language of the {studyLang} word '{word}'")
+    return { "text": response }
+
 @router.get(
     "/conjugations"
 )
