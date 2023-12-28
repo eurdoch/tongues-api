@@ -47,14 +47,14 @@ async def get_audio_transcription(
         headers=headers
     )
     transcription = r.json()['text']
-    if (is_valid_grammar(text=transcription, language=language)):
-        return {
-            "is_grammar_valid": True,
-            "text": transcription.strip(),
-        }
-    else:
-        grammar_explanation = explain_invalid_grammar(text=transcription, language=language)
-        return {
-            "is_grammar_valid": False,
-            "text": grammar_explanation,
-        }
+    #if (is_valid_grammar(text=transcription, language=language)):
+    return {
+        "is_grammar_valid": True, # For now, always return True, until you can figure out how to get grammar working
+        "text": transcription.strip(),
+    }
+    #else:
+    #    grammar_explanation = explain_invalid_grammar(text=transcription, language=language)
+    #    return {
+    #        "is_grammar_valid": False,
+    #        "text": grammar_explanation,
+    #    }

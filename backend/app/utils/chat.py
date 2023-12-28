@@ -25,7 +25,7 @@ def get_chat_response_by_language(
     newHistory = f"Human:{text}\nAI:{response}" if history is None else history + f"\nHuman:{text}\nAI:{response}"
     return {
         "is_valid": True,
-        "grammar_correct": True,
+        "grammar_correct": True, # This is always true for now as does nott work well
         "history": newHistory,
         "response": response
     }

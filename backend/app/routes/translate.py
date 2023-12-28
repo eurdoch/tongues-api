@@ -124,7 +124,7 @@ async def get_analysis(
     nativeLang: str = Query(),
     studyLang: str = Query(),
 ):
-    response = get_chat_response(f"Give a short explanation using the {nativeLang} language of the {studyLang} word '{word}'")
+    response = get_chat_response(f"Give a brief explanation using the {nativeLang} language of the {studyLang} word '{word}'")
     return { "text": response }
 
 @router.get(
