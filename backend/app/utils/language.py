@@ -10,7 +10,7 @@ def reverse_dict(original_dict):
     return switched_dict
 
 ISO_TO_LANG = {
-    'en_US': 'English (American)',
+    'en_US': 'English',
     'en_GB': 'English (British)',
     #'en_IE': 'English (Ireland)', *no standard voice
     'en_AU': 'English (Australian)',
