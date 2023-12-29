@@ -23,11 +23,15 @@ def get_chat_response_by_language(
 ):
     response = get_chat_response(prompt=f"Generate a short response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
     if history is None:
-        newHistory = f"Human:{text}\nAI:{response}\n\n"
+        newHistory = f"Human: {text}\nAI:{response}"
     else:
-        historyList = history.split("\n\n")
-        historyList.append(f"Human:{text}\nAI:{response}\n\n")
-        newHistory = "".join(f"{s}\n\n" for s in historyList[-20:])
+        historyList = history.split("\n")
+        historyList.append(f"Human: {text}")
+        historyList.append(f"AI:{response}")
+        newHistory = ""
+        newHistory = "".join(f"{s}\n" for s in historyList[-20:])
+        newHistory = newHistory[:-1]
+    print(newHistory)
     return {
         "is_valid": True,
         "grammar_correct": True, # This is always true for now as does nott work well
