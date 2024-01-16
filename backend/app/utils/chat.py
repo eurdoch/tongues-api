@@ -20,8 +20,9 @@ def get_chat_response_by_language(
     text: str,
     language: str,
     history: str = None,
+    difficulty: str = "beginner",
 ):
-    response = get_chat_response(prompt=f"Generate a short response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
+    response = get_chat_response(prompt=f"Generate a VERY simple response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
     if history is None:
         newHistory = f"Human: {text}\nAI:{response}"
     else:
@@ -31,7 +32,6 @@ def get_chat_response_by_language(
         newHistory = ""
         newHistory = "".join(f"{s}\n" for s in historyList[-20:])
         newHistory = newHistory[:-1]
-    print(newHistory)
     return {
         "is_valid": True,
         "grammar_correct": True, # This is always true for now as does nott work well

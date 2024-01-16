@@ -15,6 +15,8 @@ class Conversation(BaseModel):
     studyLang: str
     nativeLang: str
     history: str = None
+    difficulty: str = "beginner"
+
 
 class Sentence(BaseModel):
     text: str
@@ -34,7 +36,8 @@ async def get_chat_response(
     return get_chat_response_by_language(
         text=conversation.text,
         language=conversation.studyLang,
-        history=conversation.history
+        history=conversation.history,
+        difficulty=conversation.difficulty,
     )
 
 @router.get(
