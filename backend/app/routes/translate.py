@@ -20,7 +20,7 @@ from app.utils.models import get_chat_response
 
 router = APIRouter(
     prefix="/api/v0",
-    #dependencies=[Depends(is_authorized)],
+    dependencies=[Depends(is_authorized)],
 )
 
 @router.post(

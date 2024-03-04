@@ -14,6 +14,7 @@ class User(Document):
     firebase_user_id: str
     studyLanguage: str
     nativeLanguage: str
+    messageCount: int
 
 class NativeLanguage(BaseModel):
     nativeLanguage: str

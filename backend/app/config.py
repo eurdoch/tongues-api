@@ -8,7 +8,7 @@ class Settings(BaseModel):
 
     # Mongo Engine settings
     #mongo_uri = config("MONGO_URI") if not testing else config("MONGO_TEST_URI")
-    #mongo_uri = config("MONGO_URI")
+    mongo_uri = config("MONGO_URI")
 
 
 CONFIG = Settings()

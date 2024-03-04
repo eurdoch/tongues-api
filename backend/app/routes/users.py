@@ -12,12 +12,12 @@ router = APIRouter(
     prefix="/api/v0",
 )
 
-from app.models.user import User, SignupForm, UserDAO
+from app.models.user import User
 from app.utils.auth import is_authorized
 
 @router.get(
     "/verify",
-    dependencies=[Depends(is_authorized)],
+#    dependencies=[Depends(is_authorized)],
 )
 async def verify_token():
     pass
@@ -33,7 +33,7 @@ async def get_user_by_id(
     user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
     if user is None:
         raise HTTPException(404)
-    return UserDAO.parse_obj(user)
+    return user
 
 @router.put(
      "/users",
@@ -54,30 +54,17 @@ async def update_user(
 
 @router.post("/users")
 async def add_user(
-    signup_form: SignupForm = Body(),
+    user: User = Body(),
 ):
-    existing_user = await User.find_one(User.firebase_user_id == signup_form.firebase_user_id)
+    existing_user = await User.find_one(User.firebase_user_id == user.firebase_user_id)
     if existing_user is not None:
         raise HTTPException(401)
     new_user = User(
-        firebase_user_id=signup_form.firebase_user_id,
-        nativeLanguage=signup_form.nativeLanguage,
-        studyLanguage=signup_form.studyLanguage,
+        firebase_user_id=user.firebase_user_id,
+        nativeLanguage=user.nativeLanguage,
+        studyLanguage=user.studyLanguage,
+        messageCount=0,
     )
     inserted_user = await new_user.insert()
-    return UserDAO.parse_obj(inserted_user)
+    return inserted_user
 
-# TODO update this, needs to be delete function for user
-# @router.delete(
-#     "/users",
-#     dependencies=[Depends(is_authorized)],
-# )
-# async def delete_user_by_id(
-#     authorization: str = Header(),
-# ):
-#     user_id = auther.get_user_from_jwt(authorization)
-#     user: User = await User.get(user_id)
-#     if user is None:
-#         raise HTTPException(401)
-#     result = await user.delete()
-#     return True

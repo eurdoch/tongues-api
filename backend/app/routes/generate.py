@@ -9,7 +9,7 @@ from io import BytesIO
 from contextlib import closing
 from app.utils.generate import generate_audio_stream
 from app.utils.auth import is_authorized
-from app.utils.language import ISO_TO_VOICE_ID
+from app.utils.language import ISO_TO_VOICE_ID, LANG_TO_ISO
 
 router = APIRouter(
     prefix="/api/v0",
@@ -26,8 +26,9 @@ class Speech(BaseModel):
 
 @router.post("/speech")
 async def generate_speech(speech: Speech): 
+    iso = LANG_TO_ISO[speech.language]
     stream = generate_audio_stream(
-        ISO_TO_VOICE_ID[speech.language.replace('-','_')], 
+        ISO_TO_VOICE_ID[iso], 
         speech.text
     )
     f = BytesIO()

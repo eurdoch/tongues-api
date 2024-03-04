@@ -26,6 +26,7 @@ async def get_streaming_chat_response(prompt, max_tokens=3000):
     for event in response['body']:
         yield "data: " + event['chunk']['bytes'].decode() + "\n\n"
 
+# TODO Why top_p 90% ?
 def get_chat_response(prompt, max_tokens=3000, temperature=1.0, top_p=0.9):
     body = json.dumps({
         "prompt": "Human:" + prompt + "\n\nAssistant:",

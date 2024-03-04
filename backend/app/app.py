@@ -14,25 +14,24 @@ from app.models.translate import Word
 from dotenv import load_dotenv
 load_dotenv()
 
-#import certifi
-#ca = certifi.where()
+import certifi
+ca = certifi.where()
 
-#@asynccontextmanager
-#async def lifespan(app: FastAPI):
-#    app.db = AsyncIOMotorClient(CONFIG.mongo_uri, tlsCAFile=ca).grawk
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.db = AsyncIOMotorClient(CONFIG.mongo_uri, tlsCAFile=ca).tongues
 #    app.audio_bucket = AsyncIOMotorGridFSBucket(app.db, bucket_name='audio')
-#    await init_beanie(
-#        app.db, 
-#        document_models=[
-#            User,
-#            UserDAO, 
-#			Word,
-#        ]
-#    )
-#    yield
+    await init_beanie(
+        app.db, 
+        document_models=[
+            User,
+            UserDAO, 
+        ]
+    )
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
-#cred = credentials.Certificate('./firebase-key.json')
-#firebase_admin.initialize_app(cred)
+cred = credentials.Certificate('./firebase-key.json')
+firebase_admin.initialize_app(cred)
 #llm = ChatOpenAI()

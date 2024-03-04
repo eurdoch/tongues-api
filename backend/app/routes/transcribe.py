@@ -10,8 +10,6 @@ import os
 import requests
 
 from app.utils.auth import is_authorized
-from app.utils.chat import is_valid_grammar
-from app.utils.chat import explain_invalid_grammar
 from app.utils.language import LANG_TO_ISO
 
 from dotenv import load_dotenv
