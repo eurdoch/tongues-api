@@ -7,6 +7,7 @@ from app.routes.suggestion import router as SuggestionRouter
 from app.routes.chat import router as ChatRouter
 from app.routes.audio import router as AudioRouter
 from app.routes.ping import router as PingRouter
+from app.routes.subscribe import router as SubscribeRouter
 from starlette.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -25,3 +26,4 @@ app.include_router(TranscribeRouter)
 app.include_router(SuggestionRouter)
 app.include_router(ChatRouter)
 app.include_router(AudioRouter)
+app.include_router(SubscribeRouter)

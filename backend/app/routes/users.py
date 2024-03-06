@@ -16,13 +16,6 @@ from app.models.user import User
 from app.utils.auth import is_authorized
 
 @router.get(
-    "/verify",
-#    dependencies=[Depends(is_authorized)],
-)
-async def verify_token():
-    pass
-
-@router.get(
     "/users",
 )
 async def get_user_by_id(

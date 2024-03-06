@@ -15,6 +15,8 @@ class User(Document):
     studyLanguage: str
     nativeLanguage: str
     messageCount: int
+    subscribed: bool = False
+    stripeCustomerId: str = ""
 
 class NativeLanguage(BaseModel):
     nativeLanguage: str
