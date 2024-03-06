@@ -40,6 +40,8 @@ async def get_convo_response(
     token = authorization.split(' ')[1]
     decoded_token = auth.verify_id_token(token)
     user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
+    if user.messageCount > 5 and not user.subscribed:
+        return False
     if user is None:
         raise HTTPException(401)
     user.messageCount += 1
