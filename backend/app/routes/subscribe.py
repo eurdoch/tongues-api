@@ -4,21 +4,24 @@ from fastapi import (
     Request,
     Query,
     Header,
-    HTTPException
+    HTTPException,
+    Depends,
 )
 from pydantic import BaseModel
 from firebase_admin import auth
 
 import stripe
-stripe.api_key="sk_test_51OodJFB8zNt1mTxfFmNgXsMqscUAwN7ZjNYx8ChvR0olpFqVS6xLj75AW4gkgHnLOAxQOhJlg3pN7BzGo0DT0RCa003UxSbakv"
+stripe.api_key="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"
 
 from app.models.user import User
+from app.utils.auth import is_authorized
 
 class Subscription(BaseModel):
     priceId: str
 
 router = APIRouter(
     prefix="/api/v0",
+    dependencies=[Depends(is_authorized)],
 )
 
 @router.get("/success")
@@ -44,7 +47,7 @@ async def checkout_success(
 @router.post(
     "/create-checkout-session"
 )
-async def create_checkout_subscription(
+async def create_checkout_session(
     authorization = Header(),
     subscription: Subscription = Body()
 ):
@@ -102,3 +105,21 @@ async def webhook_received(request: Request):
         print(data)
     else:
         print('Unhandled event type {}'.format(event_type))
+
+@router.get("/portal")
+async def get_customer_portal(
+    authorization: str = Header()
+):
+    return_url="https://tongues.media"
+    token = authorization.split(' ')[1]
+    decoded_token = auth.verify_id_token(token)
+    user: User = await User.find_one(User.firebase_user_id == decoded_token['uid'])
+    if user is None:
+        raise HTTPException(401)
+    session = stripe.billing_portal.Session.create(
+        customer=user.stripeCustomerId,
+        return_url=return_url,
+    )
+    return {
+        "session_url": session.url,
+    }
