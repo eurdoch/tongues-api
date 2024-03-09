@@ -56,7 +56,7 @@ async def create_checkout_session(
     custom_token = auth.create_custom_token(decoded_token['uid'])
     session = stripe.checkout.Session.create(
         success_url='https://tongues.media/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url='https://tongues.media/checkout',
+        cancel_url='https://tongues.media/',
         mode='subscription',
         line_items=[{
             'price': subscription.priceId,

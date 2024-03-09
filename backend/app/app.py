@@ -32,6 +32,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-cred = credentials.Certificate('./firebase-key.json')
+cred = credentials.Certificate('./firebase_key.json')
 firebase_admin.initialize_app(cred)
 #llm = ChatOpenAI()
