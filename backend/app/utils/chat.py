@@ -10,22 +10,42 @@ MISUNDERSTOOD_RESPONSE = {
     "German": "Es tut mir leid, ich habe dich nicht verstanden."
 }
 
+def update_history(history: str, text: str, response: str):
+    historyList = history.split("\n")
+    historyList.append(f"Human: {text}")
+    historyList.append(f"AI:{response}")
+    newHistory = ""
+    newHistory = "".join(f"{s}\n" for s in historyList[-20:])
+    return newHistory[:-1]	
+
 def get_chat_response_by_language(
     text: str,
     language: str,
+    difficulty: str,
     history: str = None,
-    difficulty: str = "beginner",
 ):
-    response = get_chat_response(prompt=f"Generate a short response to continue the following conversation in {language}. ONLY return the response.\n{history}Human: {text}\nAI:")
+    if difficulty == "Beginner":   
+        response = get_chat_response(
+            prompt=f"""Generate a very simple response to 
+            continue the following conversation in {language}.  
+            ONLY return the response.\n
+            {history}Human: {text}\nAI:"""
+        )
+    else:
+        response = get_chat_response(
+            prompt=f"""Generate a response to continue 
+                the following conversation in {language}. 
+                ONLY return the response.\n{history}
+                Human: {text}\nAI:"""
+        )
     if history is None:
         newHistory = f"Human: {text}\nAI:{response}"
     else:
-        historyList = history.split("\n")
-        historyList.append(f"Human: {text}")
-        historyList.append(f"AI:{response}")
-        newHistory = ""
-        newHistory = "".join(f"{s}\n" for s in historyList[-20:])
-        newHistory = newHistory[:-1]
+        newHistory = update_history(
+            history=history, 
+            text=text, 
+            response=response
+        )
     return {
         "is_valid": True,
         "grammar_correct": True, # This is always true for now as does nott work well

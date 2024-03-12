@@ -5,6 +5,8 @@ from fastapi import (
     Header,
 )
 from datetime import datetime
+from pydantic import BaseModel
+
 from firebase_admin import auth
 
 from app.utils.auth import is_authorized
@@ -16,10 +18,14 @@ router = APIRouter(
 from app.models.user import User, SupportTicket
 from app.utils.auth import is_authorized
 
+class SupportMessage(BaseModel):
+	email: str
+	message: str
+
 @router.post("/support")
 async def support_ticket(
+	supportMessage: SupportMessage = Body(),
     authorization = Header(),
-    supportTicket: SupportTicket = Body(),
 ):
     token = authorization.split(' ')[1]
     decoded_token = auth.verify_id_token(token)
@@ -28,12 +34,12 @@ async def support_ticket(
         raise HTTPException(401)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ticket = SupportTicket(
-        email=supportTicket.email,
-        message=supportTicket.message,
+        email=supportMessage.email,
+        message=supportMessage.message,
         user=user,
         date=now,
     )
-    inserted_ticket = ticket.insert()
+    inserted_ticket = await ticket.insert()
     return {
-        ticket_id: inserted_ticket._id
+        'ticket_id': str(inserted_ticket.id)
     }

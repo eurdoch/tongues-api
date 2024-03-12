@@ -19,7 +19,7 @@ class Conversation(BaseModel):
     studyLang: str
     nativeLang: str
     history: str = None
-    difficulty: str = "beginner"
+    difficulty: str = "Beginner"
 
 class Sentence(BaseModel):
     text: str
