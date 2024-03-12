@@ -18,6 +18,12 @@ class User(Document):
     subscribed: bool = False
     stripeCustomerId: str = ""
 
+class SupportTicket(Document):
+    email: str
+    message: str
+    date: str
+    user: User
+
 class NativeLanguage(BaseModel):
     nativeLanguage: str
 
