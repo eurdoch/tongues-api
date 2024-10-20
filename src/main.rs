@@ -7,8 +7,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use aws_sdk_polly::{types::OutputFormat, Client};
 use aws_sdk_polly::types::VoiceId;
-use aws_sdk_polly::error::SdkError;
-use aws_sdk_polly::operation::synthesize_speech::SynthesizeSpeechError;
 
 #[derive(Serialize, Deserialize)]
 struct TranslateRequest {
