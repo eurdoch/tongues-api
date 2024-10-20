@@ -1,10 +1,10 @@
+use aws_config::BehaviorVersion;
 use axum::{
     routing::{get, post},
     http::StatusCode,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use axum_test::TestServer;
 use aws_sdk_polly::{types::OutputFormat, Client};
 use aws_sdk_polly::types::VoiceId;
 use aws_sdk_polly::error::SdkError;
@@ -25,11 +25,6 @@ struct TranslateResponse {
 struct SpeechRequest {
     voice_id: String,
     text: String,
-}
-
-#[derive(Serialize)]
-struct SpeechResponse {
-    audio_content: String,
 }
 
 #[tokio::main]
@@ -88,8 +83,8 @@ Text: {}
     Json(TranslateResponse { translated_text })
 }
 
-async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Json<SpeechResponse>, StatusCode> {
-    let config = aws_config::load_from_env().await;
+async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Vec<u8>, StatusCode> {
+    let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
     let voice_id = VoiceId::from(payload.voice_id.as_str());
@@ -104,7 +99,5 @@ async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Json<SpeechRespons
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let audio_stream = output.audio_stream.collect().await.unwrap();
-    let audio_content = base64::encode(&audio_stream);
-
-    Ok(Json(SpeechResponse { audio_content }))
+    Ok(audio_stream.into_bytes().to_vec())
 }
