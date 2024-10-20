@@ -39,7 +39,7 @@ struct TranslateResponse {
 
 #[derive(Serialize, Deserialize)]
 struct SpeechRequest {
-    voice_id: String,
+    language: String,
     text: String,
 }
 
@@ -103,7 +103,9 @@ async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Vec<u8>, StatusCod
     let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
-    let voice_id = VoiceId::from(payload.voice_id.as_str());
+    let voice_id_str = LANGUAGE_TO_VOICE.get(payload.language.as_str())
+        .ok_or(StatusCode::BAD_REQUEST)?;
+    let voice_id = VoiceId::from(*voice_id_str);
 
     let output = client
         .synthesize_speech()
@@ -117,3 +119,5 @@ async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Vec<u8>, StatusCod
     let audio_stream = output.audio_stream.collect().await.unwrap();
     Ok(audio_stream.into_bytes().to_vec())
 }
+
+
