@@ -1,12 +1,30 @@
+use std::collections::HashMap;
+
 use aws_config::BehaviorVersion;
 use axum::{
     routing::{get, post},
     http::StatusCode,
     Json, Router,
 };
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use aws_sdk_polly::{types::OutputFormat, Client};
 use aws_sdk_polly::types::VoiceId;
+
+lazy_static! {
+    static ref LANGUAGE_TO_VOICE: std::collections::HashMap<&'static str, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert("French", "Celine");
+        m.insert("English", "Joanna");
+        m.insert("German", "Marlene");
+        m.insert("Spanish", "Conchita");
+        m.insert("Italian", "Carla");
+        m.insert("Japanese", "Mizuki");
+        m.insert("Portuguese", "Vitoria");
+        m.insert("Chinese", "Zhiyu");
+        m
+    };
+}
 
 #[derive(Serialize, Deserialize)]
 struct TranslateRequest {

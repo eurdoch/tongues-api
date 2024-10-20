@@ -2086,6 +2086,7 @@ dependencies = [
  "axum",
  "axum-test",
  "base64 0.22.1",
+ "lazy_static",
  "mockito",
  "reqwest",
  "serde",
