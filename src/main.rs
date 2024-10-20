@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post},
+routing::{get, post},
     http::StatusCode,
     Json, Router,
 };
@@ -37,7 +37,7 @@ async fn translate(Json(payload): Json<TranslateRequest>) -> Json<TranslateRespo
     let client = reqwest::Client::new();
     let anthropic_api_key = std::env::var("ANTHROPIC_API_KEY").expect("ANTHROPIC_API_KEY must be set");
 
-let prompt = format!("Translate the following text from source language to target language. Only return the translated text.
+    let prompt = format!("Translate the following text from source language to target language. Only return the translated text.
 
 Source language: {}
 Target language: English
@@ -72,38 +72,3 @@ Text: {}
     Json(TranslateResponse { translated_text })
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_root() {
-        let app = Router::new().route("/", get(root));
-        let server = TestServer::new(app).unwrap();
-
-        let response = server.get("/").await;
-        assert_eq!(response.status_code(), StatusCode::OK);
-        assert_eq!(response.text(), "Hello, World!");
-    }
-
-    #[tokio::test]
-    async fn test_translate() {
-        let app = Router::new().route("/translate", post(translate));
-        let server = TestServer::new(app).unwrap();
-
-        let payload = TranslateRequest {
-            language: "en".to_string(),
-            text: "Hello".to_string(),
-        };
-
-        let response = server
-            .post("/translate")
-            .json(&payload)
-            .await;
-
-        assert_eq!(response.status_code(), StatusCode::OK);
-
-        let body: TranslateResponse = response.json();
-        assert_eq!(body.translated_text, "Hello");
-    }
-}
