@@ -1,27 +1,24 @@
 use std::collections::HashMap;
 
 use aws_config::BehaviorVersion;
-use axum::{
-    routing::{get, post},
-    http::StatusCode,
-    Json, Router,
-};
+use axum::{http::{Method, StatusCode}, routing::{get, post}, Json, Router};
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use aws_sdk_polly::{types::OutputFormat, Client};
 use aws_sdk_polly::types::VoiceId;
+use tower_http::cors::{CorsLayer, Any};
 
 lazy_static! {
     static ref LANGUAGE_TO_VOICE: std::collections::HashMap<&'static str, &'static str> = {
         let mut m = HashMap::new();
-        m.insert("French", "Celine");
-        m.insert("English", "Joanna");
-        m.insert("German", "Marlene");
-        m.insert("Spanish", "Conchita");
-        m.insert("Italian", "Carla");
-        m.insert("Japanese", "Mizuki");
-        m.insert("Portuguese", "Vitoria");
-        m.insert("Chinese", "Zhiyu");
+        m.insert("French", "Mathieu");
+        m.insert("English", "Matthew");
+        m.insert("German", "Hans");
+        m.insert("Spanish", "Enrique");
+        m.insert("Italian", "Giorgio");
+        m.insert("Japanese", "Takumi");
+        m.insert("Portuguese", "Cristiano");
+        m.insert("Chinese", "Zhiwei");
         m
     };
 }
@@ -47,10 +44,19 @@ struct SpeechRequest {
 async fn main() {
     tracing_subscriber::fmt::init();
 
+    let cors = CorsLayer::new()
+        // allow `GET` and `POST` when accessing the resource
+        .allow_methods([Method::GET, Method::POST])
+        // allow requests from any origin
+        .allow_origin(Any)
+        // allow all headers
+        .allow_headers(Any);
+
     let app = Router::new()
         .route("/", get(root))
         .route("/translate", post(translate))
-        .route("/speech", post(speech));
+        .route("/speech", post(speech))
+        .layer(cors);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
