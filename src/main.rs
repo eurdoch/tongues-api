@@ -1,10 +1,14 @@
 use axum::{
-routing::{get, post},
+    routing::{get, post},
     http::StatusCode,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use axum_test::TestServer;
+use aws_sdk_polly::{types::OutputFormat, Client};
+use aws_sdk_polly::types::VoiceId;
+use aws_sdk_polly::error::SdkError;
+use aws_sdk_polly::operation::synthesize_speech::SynthesizeSpeechError;
 
 #[derive(Serialize, Deserialize)]
 struct TranslateRequest {
@@ -17,13 +21,25 @@ struct TranslateResponse {
     translated_text: String,
 }
 
+#[derive(Serialize, Deserialize)]
+struct SpeechRequest {
+    voice_id: String,
+    text: String,
+}
+
+#[derive(Serialize)]
+struct SpeechResponse {
+    audio_content: String,
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
     let app = Router::new()
         .route("/", get(root))
-        .route("/translate", post(translate));
+        .route("/translate", post(translate))
+        .route("/speech", post(speech));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
@@ -72,3 +88,23 @@ Text: {}
     Json(TranslateResponse { translated_text })
 }
 
+async fn speech(Json(payload): Json<SpeechRequest>) -> Result<Json<SpeechResponse>, StatusCode> {
+    let config = aws_config::load_from_env().await;
+    let client = Client::new(&config);
+
+    let voice_id = VoiceId::from(payload.voice_id.as_str());
+
+    let output = client
+        .synthesize_speech()
+        .output_format(OutputFormat::Mp3)
+        .text(payload.text)
+        .voice_id(voice_id)
+        .send()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let audio_stream = output.audio_stream.collect().await.unwrap();
+    let audio_content = base64::encode(&audio_stream);
+
+    Ok(Json(SpeechResponse { audio_content }))
+}
