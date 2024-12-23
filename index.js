@@ -32,10 +32,12 @@ const LANGUAGE_TO_VOICE = {
 };
 
 app.get('/ping', (req, res) => {
+  console.log('Received /ping request');
   res.status(200).send('pong');
 });
 
 app.post('/translate', async (req, res) => {
+  console.log('Received /translate request');
   const { language, text } = req.body;
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -70,6 +72,7 @@ Text: ${text}
     });
 
     const translatedText = response.data.content[0].text;
+    console.log('Translation successful');
     res.status(200).json({ translated_text: translatedText });
   } catch (err) {
     console.error(err);
@@ -78,6 +81,7 @@ Text: ${text}
 });
 
 app.post('/speech', async (req, res) => {
+  console.log('Received /speech request');
   const { language, text } = req.body;
   const voiceId = LANGUAGE_TO_VOICE[language];
 
@@ -97,6 +101,7 @@ app.post('/speech', async (req, res) => {
 
     if (response.AudioStream) {
       const audioBuffer = await response.AudioStream.transformToByteArray();
+      console.log('Speech synthesis successful');
       res.status(200);
       res.set({
         'Content-Type': 'audio/mpeg',
