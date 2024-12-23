@@ -5,6 +5,10 @@
   "repository": "git@github.com:foomprep/tongues-api.git",
   "author": "George Balch <gbalch714@gmail.com>",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-polly": "^3.716.0",
+    "axios": "^1.7.9",
+    "express": "^4.21.2"
+  }
 }
-
