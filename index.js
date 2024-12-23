@@ -119,7 +119,7 @@ app.post('/speech', async (req, res) => {
 
 app.post('/language', async (req, res) => {
   console.log('Received /language request');
-  const { html } = req.body;
+  const { text } = req.body;
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!anthropicApiKey) {
@@ -127,9 +127,12 @@ app.post('/language', async (req, res) => {
     return;
   }
 
-  const prompt = `What language is the text content within the following html written in? Return the answer as JSON in style of { language: "Spanish"} for whatever language.
+  const prompt = `
+Format your response as JSON with field language.
 
-HTML: ${html}
+Return the language of the text in the style of { language: "Spanish" }. 
+
+Text: ${text}
 `;
 
   try {
