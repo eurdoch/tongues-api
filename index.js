@@ -72,7 +72,6 @@ Text: ${text}
     });
 
     const translatedText = response.data.content[0].text;
-    console.log('Translation successful');
     res.status(200).json({ translated_text: translatedText });
   } catch (err) {
     console.error(err);
@@ -112,6 +111,49 @@ app.post('/speech', async (req, res) => {
     } else {
       res.status(500).send('Failed to generate speech');
     }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/language', async (req, res) => {
+  console.log('Received /language request');
+  const { text } = req.body;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+
+  if (!anthropicApiKey) {
+    res.status(500).send('ANTHROPIC_API_KEY must be set');
+    return;
+  }
+
+  const prompt = `What language is the following text written in? Return the answer as JSON in style of { language: "Spanish"} for whatever language.
+
+Text: ${text}
+`;
+
+  try {
+    const response = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': anthropicApiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+
+    // TODO if parse fails retry query
+    const language = response.data.content[0].text;
+    const parsed = JSON.parse(language);
+    res.status(200).json(parsed);
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
