@@ -174,7 +174,7 @@ app.post('/verb-tenses', async (req, res) => {
   }
 
   const prompt = `
-Return the different tenses of the verb ${verb}, including the infinitive.
+Return the different tenses of the verb ${verb}, including the infinitive and translation in English.
 `;
 
   try {
