@@ -22,6 +22,7 @@ const pollyClient = new PollyClient({
 
 const LANGUAGE_TO_VOICE = {
   'French': 'Mathieu',
+  'Dutch': 'Ruben',
   'English': 'Matthew',
   'German': 'Hans',
   'Spanish': 'Enrique',
@@ -209,6 +210,8 @@ Return all tenses and conjugations of the verb ${verb}, including the infinitive
 app.post('/marks', async (req, res) => {
   console.log('Received /marks request');
   const { language, text } = req.body;
+  console.log('Language: ', language);
+  console.log('Text', text);
   const voiceId = LANGUAGE_TO_VOICE[language];
 
   if (!voiceId) {
