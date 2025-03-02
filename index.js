@@ -206,6 +206,49 @@ Return all tenses and conjugations of the verb ${verb}, including the infinitive
   }
 });
 
+app.post('/marks', async (req, res) => {
+  console.log('Received /marks request');
+  const { language, text } = req.body;
+  const voiceId = LANGUAGE_TO_VOICE[language];
+
+  if (!voiceId) {
+    res.status(400).send('Invalid language');
+    return;
+  }
+
+  try {
+    const command = new SynthesizeSpeechCommand({
+      Text: text,
+      OutputFormat: "json",
+      VoiceId: voiceId,
+      SpeechMarkTypes: ["word"]
+    });
+
+    const response = await pollyClient.send(command);
+
+    if (response.AudioStream) {
+      const chunks = [];
+      for await (const chunk of response.AudioStream) {
+        chunks.push(chunk);
+      }
+      
+      const buffer = Buffer.concat(chunks);
+      const markData = buffer.toString('utf8');
+      
+      // Parse each line as JSON objects and return as array
+      const marks = markData.trim().split('\n').map(line => JSON.parse(line));
+      
+      console.log('Speech marks generated successfully');
+      res.status(200).json({ marks });
+    } else {
+      res.status(500).send('Failed to generate speech marks');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(3002, () => {
   console.log('Server listening on port 3002');
 });
