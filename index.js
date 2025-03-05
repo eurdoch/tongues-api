@@ -252,6 +252,49 @@ app.post('/marks', async (req, res) => {
   }
 });
 
+app.post('/explain', async (req, res) => {
+  console.log('Received /explain request');
+  const { word, language } = req.body;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+
+  if (!anthropicApiKey) {
+    res.status(500).send('ANTHROPIC_API_KEY must be set');
+    return;
+  }
+
+  const prompt = `
+Explain the meaning of the following word in English. Provide a clear and concise explanation suitable for language learners.
+
+Language: ${language}
+Word: ${word}
+`;
+
+  try {
+    const response = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': anthropicApiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+
+    const explanation = response.data.content[0].text;
+    res.status(200).json({ explanation });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(3002, () => {
   console.log('Server listening on port 3002');
 });
