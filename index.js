@@ -307,7 +307,7 @@ app.post('/query', async (req, res) => {
 
   try {
     const response = await axios.post('https://api.anthropic.com/v1/messages', {
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-haiku-latest',
       max_tokens: 1024,
       messages: [
         {
