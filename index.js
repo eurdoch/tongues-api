@@ -295,6 +295,42 @@ Word: ${word}
   }
 });
 
+app.post('/query', async (req, res) => {
+  console.log('Received /query request');
+  const { prompt } = req.body;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+
+  if (!anthropicApiKey) {
+    res.status(500).send('ANTHROPIC_API_KEY must be set');
+    return;
+  }
+
+  try {
+    const response = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': anthropicApiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+
+    const answer = response.data.content[0].text;
+    res.status(200).json({ answer });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(3002, () => {
   console.log('Server listening on port 3002');
 });
