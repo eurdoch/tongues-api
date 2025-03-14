@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
+import OpenAI from 'openai';
 
 const app = express();
 app.use(express.json());
@@ -298,38 +299,32 @@ Word: ${word}
 app.post('/query', async (req, res) => {
   console.log('Received /query request');
   const { prompt } = req.body;
-  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+  const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
 
-  if (!anthropicApiKey) {
-    res.status(500).send('ANTHROPIC_API_KEY must be set');
+  if (!openaiApiKey) {
+    res.status(500).send('DEEPSEEK_API_KEY must be set');
     return;
   }
 
   try {
-    const response = await axios.post('https://api.anthropic.com/v1/messages', {
-      model: 'claude-3-5-haiku-latest',
+    const openai = new OpenAI(deepseekApiKey);
+    const response = await openai.createCompletion({
+      model: "deepseek-chat",
+      prompt: prompt,
       max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': anthropicApiKey,
-        'anthropic-version': '2023-06-01'
+      response_format: {
+        'type': 'json_object',
       }
     });
 
-    const answer = response.data.content[0].text;
+    const answer = response.choices[0].text;
     res.status(200).json({ answer });
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.listen(3002, () => {
   console.log('Server listening on port 3002');
