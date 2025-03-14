@@ -307,7 +307,9 @@ app.post('/query', async (req, res) => {
   }
 
   try {
-    const openai = new OpenAI(deepseekApiKey);
+    const openai = new OpenAI({
+      apiKey: deepseekApiKey
+    });
     const response = await openai.createCompletion({
       model: "deepseek-chat",
       prompt: prompt,
