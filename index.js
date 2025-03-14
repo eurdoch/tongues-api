@@ -300,8 +300,9 @@ app.post('/query', async (req, res) => {
   console.log('Received /query request');
   const { prompt } = req.body;
   const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+	console.log(deepseekApiKey);
 
-  if (!openaiApiKey) {
+  if (!deepseekApiKey) {
     res.status(500).send('DEEPSEEK_API_KEY must be set');
     return;
   }
