@@ -8,7 +8,7 @@
   "type": "module",
   "dependencies": {
     "@aws-sdk/client-polly": "^3.716.0",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "express": "^4.21.2",
     "openai": "^4.87.3"
   }
