@@ -300,7 +300,6 @@ app.post('/query', async (req, res) => {
   console.log('Received /query request');
   const { prompt } = req.body;
   const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
-	console.log(deepseekApiKey);
 
   if (!deepseekApiKey) {
     res.status(500).send('DEEPSEEK_API_KEY must be set');
@@ -309,19 +308,22 @@ app.post('/query', async (req, res) => {
 
   try {
     const openai = new OpenAI({
+      baseURL: 'https://api.deepseek.com',
       apiKey: deepseekApiKey
     });
-    const response = await openai.createCompletion({
+    const completion = await openai.chat.completions.create({
       model: "deepseek-chat",
-      prompt: prompt,
+      messages: [
+	{ role: 'user', content: prompt },
+      ],
       max_tokens: 1024,
       response_format: {
         'type': 'json_object',
       }
     });
 
-    const answer = response.choices[0].text;
-    res.status(200).json({ answer });
+    const jsonResponse = JSON.parse(completion.choices[0].message.content);
+    res.status(200).json(jsonResponse);
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
