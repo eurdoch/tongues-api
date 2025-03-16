@@ -132,7 +132,7 @@ app.post('/language', async (req, res) => {
   const prompt = `
 Format your response as JSON with field language.
 
-Return the language of the text in the style of { language: "Spanish" }. 
+Return the language of the text in this webpage in the style of { language: "Spanish" }. 
 
 Text: ${text}
 `;
